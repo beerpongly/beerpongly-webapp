@@ -2,10 +2,28 @@
 
 import { useState } from 'react';
 import { Database } from '@/types/supabase'
-import { Session, useSupabaseClient } from '@supabase/auth-helpers-react'
+import { Session, User, useSupabaseClient } from '@supabase/auth-helpers-react'
 import { TournamentFormProps } from '../types/form-types'; // Adjust the path based on your project structure
 
 type Tournaments = Database['public']['Tables']['tournaments']['Row']
+type Rounds = Database['public']['Tables']['rounds']['Row']
+type Matches = Database['public']['Tables']['matches']['Row']
+
+interface Round {
+  teams: string[]
+  tournament: number
+  round: number
+  owner_user_id: string
+}
+
+interface Match {
+  team1: string
+  team2: string
+  round: number
+  tournament: number
+  owner_user_id: string
+  match: number
+}
 
 function TournamentForm({ onSubmit, session }: TournamentFormProps) {
   const supabase = useSupabaseClient<Database>()
@@ -41,6 +59,33 @@ function TournamentForm({ onSubmit, session }: TournamentFormProps) {
     }
   };
 
+  const addMatches = async (round: Rounds, teams: string[]) => {
+    const { data: data, error } = await supabase
+      .from('matches')
+      .select('*')
+      .order('id', { ascending: true })
+      .eq('rounds', round.id)
+      console.log("rounds data" + data)
+      console.log("rounds data length" + data?.length)
+    if (!data || data.length == 0) {
+      let matches: Match[] = []
+      let matchCount: number = 1
+      for (let i = 0; i < teams.length; i=i+2) {
+        console.log("match" + i)
+        matches.push({ team1: "", team2: "", tournament: round.tournament, round: round.id, owner_user_id: user.id, match: matchCount })
+        matchCount++;
+      }
+      const { data, error } = await supabase
+        .from('matches')
+        .insert(matches)
+        .select()
+      if (error) {
+        console.log(error)
+      }
+      console.log("matches data" + data)
+    }
+  };
+
   const addRounds = async (tournament: Tournaments) => {
     const { data: data, error } = await supabase
       .from('rounds')
@@ -61,24 +106,31 @@ function TournamentForm({ onSubmit, session }: TournamentFormProps) {
       let teamsRounds: string[][] = []
       // roundCount = 1;
       let count = 1;
+      let rounds: Round[] = []
       for (let i = roundCount; i > 0; i--) {
         console.log(i)
         let teams: string[] = []
         for (let j = 0; j < Math.pow(2, i); j++) {
           teams.push("")
         }
-        console.log({ teams: teams, tournament: tournament.id, round: count })
-        const { data, error } = await supabase
-        .from('rounds')
-        .insert([
-          { teams: teams, tournament: tournament.id, round: count },
-        ])
-        .select()
-        if (error) {
-          console.log(error)
-        }
+        console.log({ teams: teams, tournament: tournament.id, round: count, owner_user_id: user.id })
+        rounds.push({ teams: teams, tournament: tournament.id, round: count, owner_user_id: user.id })
         teamsRounds.push(teams)
         count++;
+      }
+      const { data, error } = await supabase
+        .from('rounds')
+        .insert(rounds)
+        .select()
+      console.log("data" + data)
+      if (error) {
+        console.log(error)
+      }
+      if (data) {
+        console.log(data)
+        for (let i=0; i<data.length; i++) {
+          addMatches(data[i], teamsRounds[i])
+        }
       }
     }
   };
