@@ -40,7 +40,7 @@ function TournamentPlayer() {
       return roundCount;
     }
 
-    function updateTournament() {
+    function updateTournament(round: number) {
       let htmlRounds: JSX.Element[] = []
       let rounds: RoundMatches[] = [];
       // console.log(tournaments)
@@ -79,14 +79,13 @@ function TournamentPlayer() {
           "round": roundCount-i
         })
         matchesCount = matchesCount + matchesCount
-        console.log(matchups)
       }
       console.log(rounds)
       for (let index = 0; index < rounds.length; index++) {
         htmlRounds.push(<Round round={rounds[index]} key={index}/>);
       }
 
-      setPlayTournamentHTML(htmlRounds[0])
+      setPlayTournamentHTML(htmlRounds[round-1])
     }
 
     const fetchTournaments = async () => {
@@ -136,8 +135,6 @@ function TournamentPlayer() {
 
     const fetchMatches = async () => {
         try {
-            // Example: Fetch tournaments from an API
-            // console.log(router)
             if (typeof router.query.tournament == "string") {
               const { data: data, error } = await supabase
                 .from('matches')
@@ -160,26 +157,19 @@ function TournamentPlayer() {
 
     useEffect(() => {
       if (router.isReady) {
-        // Code using query
-        // console.log(router.query);
-        // this will set the state before component is mounted
-        updateTournament();
+        updateTournament(currentRound);
       }
-    // }, []);
-    }, [tournaments]);
+    }, [tournaments, currentRound]);
 
     useEffect(() => {
       if (router.isReady) {
-        // Code using query
         console.log(router.query);
-        // this will set the state before component is mounted
         fetchTournaments();
       }
     }, [router.isReady]);
-    // console.log(playTournamentHTML);
-    // fetchTournaments();
+
     function nextRound() {
-      let numOfTeams: number = 0;
+      let numOfTeams: number = 1;
       if (tournaments) {
         numOfTeams = tournaments.teams.length
       }
