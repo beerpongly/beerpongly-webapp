@@ -21,12 +21,24 @@ function TournamentPlayer() {
     const supabase = useSupabaseClient<Database>()
     const session = useSession()
     const [tournaments, setTournaments] = useState<Tournaments>()
-    const [rounds, setRounds] = useState<Rounds>()
-    const [matches, setMatches] = useState<Matches>()
+    const [rounds, setRounds] = useState<Rounds[]>()
+    const [matches, setMatches] = useState<Matches[]>()
     const [playTournamentHTML, setPlayTournamentHTML] = useState(<div></div>)
     const [addTournament, setAddTournament] = useState(false);
     const router = useRouter();
+    const [currentRound, setCurrentRound] = useState(1)
     console.log(router.asPath)
+
+    function getRoundCount(numberOfTeams: number) {
+      let roundCount = 0;
+      let currentTeams = numberOfTeams;
+
+      while (currentTeams > 1) {
+        currentTeams /= 2;
+        roundCount++;
+      }
+      return roundCount;
+    }
 
     function updateTournament() {
       let htmlRounds: JSX.Element[] = []
@@ -41,13 +53,7 @@ function TournamentPlayer() {
       // setPlayTournamentHTML()
       // setPlayTournamentHTML(<PlayTournament id={tournaments.id} tournament_name={tournaments.tournament_name} round_robin={tournaments.round_robin} teams={tournaments.teams}></PlayTournament>)
 
-      let roundCount = 0;
-      let currentTeams = numOfTeams;
-
-      while (currentTeams > 1) {
-        currentTeams /= 2;
-        roundCount++;
-      }
+      let roundCount = getRoundCount(numOfTeams)
       console.log(roundCount)
 
       let matchesCount = 1
@@ -119,7 +125,7 @@ function TournamentPlayer() {
             else {
                 console.log(data)
                 if (!rounds) {
-                  setRounds(data[0]);
+                  setRounds(data);
                 }
                 fetchMatches()
             } // Update the state with fetched data
@@ -142,7 +148,7 @@ function TournamentPlayer() {
               else {
                 console.log(data)
                 if (!matches) {
-                  setMatches(data[0])
+                  setMatches(data)
                 } // setTournaments(data[0]);
                 // fetchRounds()
               } // Update the state with fetched data
@@ -172,6 +178,22 @@ function TournamentPlayer() {
     }, [router.isReady]);
     // console.log(playTournamentHTML);
     // fetchTournaments();
+    function nextRound() {
+      let numOfTeams: number = 0;
+      if (tournaments) {
+        numOfTeams = tournaments.teams.length
+      }
+      let roundCount = getRoundCount(numOfTeams)
+      if (currentRound < roundCount) {
+        setCurrentRound(currentRound + 1)
+      }
+    }
+
+    function previousRound() {
+      if (currentRound > 1) {
+        setCurrentRound(currentRound - 1)
+      }
+    }
     return (
     <div>
       <p>Tournament Name: {tournaments?.tournament_name}</p>
@@ -179,6 +201,11 @@ function TournamentPlayer() {
       <p>Teams: {tournaments?.teams}</p><br />
       <div>
         {playTournamentHTML}
+      </div>
+      <div>
+        <button onClick={previousRound}>Previous</button>
+        <button onClick={nextRound}>Next</button>
+        <p>Round: {currentRound}</p>
       </div>
     </div>)
     }
