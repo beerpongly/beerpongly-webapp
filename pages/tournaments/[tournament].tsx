@@ -40,52 +40,109 @@ function TournamentPlayer() {
       return roundCount;
     }
 
+    function onPlay() {
+      console.log("rats")
+    }
+
+    function setFirstRound() {
+      let matchesSet: boolean = false
+      if (matches && tournaments && rounds) {
+        for (let i = 0; i < matches.length; i++) {
+          const match = matches[i];
+          console.log("Team 1: " + match.team1 + " Team 2: " + match.team2)
+          if ((match.team1 != null && match.team1 != "") || (match.team2 != null && match.team2 != "")) {
+            matchesSet = true
+          }
+        }
+        if (!matchesSet ) {
+          console.log("setFirstRound")
+          console.log(matches)
+          console.log(tournaments)
+          for (let i = 0; i < matches.length; i++) {
+            const match = matches[i];
+            
+          }
+        }
+      }
+      console.log("Set: " + matchesSet)
+    }
+
     function updateTournament(round: number) {
       let htmlRounds: JSX.Element[] = []
-      let rounds: RoundMatches[] = [];
+      let theRounds: RoundMatches[] = [];
       // console.log(tournaments)
       let numOfTeams: number = 0;
-      if (tournaments) {
-        numOfTeams = tournaments.teams.length
+      let matchups: Matchup[] = []
+      if (matches && rounds && tournaments) {
+        numOfTeams = 0
+        for (let i = 0; i < rounds.length; i++) {
+          const theRound = rounds[i];
+          if (theRound.round == round && tournaments.id == theRound.tournament) {
+            for (let j = 0; j < matches.length; j++) {
+              const element = matches[j];
+              if (element.round == theRound.id) {
+                const topTeam = {
+                  "team": "",
+                  "position": 0
+                };
+                const bottomTeam = {
+                  "team": "",
+                  "position": 0
+                };
+                matchups.push({
+                  "match": undefined,
+                  "topTeam": topTeam,
+                  "bottomTeam": bottomTeam
+                });
+              }
+            }
+            let finalRound: RoundMatches = {
+              "matches": [],
+              "displayMatches": matchups,
+              "round": round-i
+            }
+            setPlayTournamentHTML(<Round onPlay={() => onPlay()} round={finalRound} key={finalRound.round}/>)
+          }
+        }
       }
-      
       // console.log(numOfTeams)
       // setPlayTournamentHTML()
       // setPlayTournamentHTML(<PlayTournament id={tournaments.id} tournament_name={tournaments.tournament_name} round_robin={tournaments.round_robin} teams={tournaments.teams}></PlayTournament>)
 
-      let roundCount = getRoundCount(numOfTeams)
-      console.log(roundCount)
+      // let roundCount = getRoundCount(numOfTeams)
+      // console.log(roundCount)
 
-      let matchesCount = 1
-      for (let i = 0; i < roundCount; i++) {
-        let matchups: Matchup[] = []
-        for (let j = 1; j <= matchesCount; j++) {
-          const topTeam = {
-            "team": "",
-            "position": 0
-          };
-          const bottomTeam = {
-            "team": "",
-            "position": 0
-          };
-          matchups.push({
-            "topTeam": topTeam,
-            "bottomTeam": bottomTeam
-          });
-          
-        }
-        rounds.unshift({
-          "teams": matchups,
-          "round": roundCount-i
-        })
-        matchesCount = matchesCount + matchesCount
-      }
-      console.log(rounds)
-      for (let index = 0; index < rounds.length; index++) {
-        htmlRounds.push(<Round round={rounds[index]} key={index}/>);
-      }
+      // let matchesCount = 1
+      // for (let i = 0; i < roundCount; i++) {
+      //   let matchups: Matchup[] = []
+      //   // for (let j = 1; j <= matchesCount; j++) {
+      //   //   const topTeam = {
+      //   //     "team": "",
+      //   //     "position": 0
+      //   //   };
+      //   //   const bottomTeam = {
+      //   //     "team": "",
+      //   //     "position": 0
+      //   //   };
+      //   //   matchups.push({
+      //   //     "match": undefined,
+      //   //     "topTeam": topTeam,
+      //   //     "bottomTeam": bottomTeam
+      //   //   });
+      //   // }
+      //   // theRounds.unshift({
+      //   //   "matches": [],
+      //   //   "displayMatches": matchups,
+      //   //   "round": roundCount-i
+      //   // })
+      //   matchesCount = matchesCount + matchesCount
+      // }
+      // console.log(rounds)
+      // for (let index = 0; index < theRounds.length; index++) {
+      //   htmlRounds.push(<Round onPlay={() => onPlay()} round={theRounds[index]} key={index}/>);
+      // }
 
-      setPlayTournamentHTML(htmlRounds[round-1])
+      // setPlayTournamentHTML(<Round onPlay={() => onPlay()} round={theRounds} key={index}/>)
     }
 
     const fetchTournaments = async () => {
@@ -159,7 +216,7 @@ function TournamentPlayer() {
       if (router.isReady) {
         updateTournament(currentRound);
       }
-    }, [tournaments, currentRound]);
+    }, [matches, currentRound]);
 
     useEffect(() => {
       if (router.isReady) {
@@ -167,6 +224,12 @@ function TournamentPlayer() {
         fetchTournaments();
       }
     }, [router.isReady]);
+
+    useEffect(() => {
+      if (router.isReady) {
+        setFirstRound();
+      }
+    }, [matches]);
 
     function nextRound() {
       let numOfTeams: number = 1;
@@ -186,6 +249,7 @@ function TournamentPlayer() {
     }
     return (
     <div>
+      <NavBar></NavBar>
       <p>Tournament Name: {tournaments?.tournament_name}</p>
       <p>Round Robin: {tournaments?.round_robin}</p>
       <p>Teams: {tournaments?.teams}</p><br />

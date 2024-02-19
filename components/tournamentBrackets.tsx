@@ -6,6 +6,10 @@ import { TournamentFormProps } from '../types/form-types'; // Adjust the path ba
 import TournamentForm from '@/components/CreateTournament';
 import NavBar from '@/components/navbar';
 
+type Tournaments = Database['public']['Tables']['tournaments']['Row']
+type Rounds = Database['public']['Tables']['rounds']['Row']
+type Matches = Database['public']['Tables']['matches']['Row']
+
 export interface Tournament {
     id: number;
     tournament_name: string;
@@ -17,21 +21,24 @@ export interface Tournament {
     team: string;
     position: number;
   }
-  
+
   export interface Matchup {
+    match: Matches | undefined
     topTeam: BracketTeam;
     bottomTeam: BracketTeam;
   }
-  
+
   export interface RoundMatches {
-    teams: Matchup[]
+    matches: Matches[]
+    displayMatches: Matchup[]
     round: number
   }
-  
+
   export interface Games {
     round: RoundMatches
+    onPlay: () => void;
   }
-  
+
   export function TopBracket({ team, position }: BracketTeam) {
     return (
       <div className="flex justify-start">
@@ -44,7 +51,7 @@ export interface Tournament {
       </div>
     )
   }
-  
+
   export function BottomBracket({ team, position }: BracketTeam) {
     return (
       <div className="flex justify-start box-border border-gray-400 max-w-50">
@@ -69,12 +76,16 @@ export interface Tournament {
     )
   }
   
- export function Round({round}: Games) {
+ export function Round({round, onPlay}: Games) {
     let matches = []
   
-    for (let index = 0; index < round.teams.length; index++) {
-      const element = round.teams[index];
-      matches.push(<Match topTeam={element.topTeam} bottomTeam={element.bottomTeam} key={index}/>);
+    for (let index = 0; index < round.displayMatches.length; index++) {
+      const element = round.displayMatches[index];
+      matches.push(
+      <div onClick={onPlay}>
+        <Match topTeam={element.topTeam} bottomTeam={element.bottomTeam} key={index} match={undefined}/>
+      </div>
+      );
     }
   
     return (
