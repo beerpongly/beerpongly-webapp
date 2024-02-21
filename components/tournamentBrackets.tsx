@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { TournamentFormProps } from '../types/form-types'; // Adjust the path based on your project structure
 import TournamentForm from '@/components/CreateTournament';
 import NavBar from '@/components/navbar';
+import { useRouter, NextRouter } from 'next/router'
 
 type Tournaments = Database['public']['Tables']['tournaments']['Row']
 type Rounds = Database['public']['Tables']['rounds']['Row']
@@ -36,7 +37,7 @@ export interface Tournament {
 
   export interface Games {
     round: RoundMatches
-    onPlay: () => void;
+    router: NextRouter;
   }
 
   export function TopBracket({ team, position }: BracketTeam) {
@@ -75,14 +76,20 @@ export interface Tournament {
       </main>
     )
   }
+
+  function onPlay(tournamentId: number, matchId: number, router: NextRouter) {
+    console.log("/tournaments/" + String(tournamentId) + "/" + String(matchId))
+    router.push("/tournaments/" + String(tournamentId) + "/" + String(matchId))
+  }
   
- export function Round({round, onPlay}: Games) {
+ export function Round({round, router}: Games) {
     let matches = []
-  
     for (let index = 0; index < round.displayMatches.length; index++) {
       const element = round.displayMatches[index];
+      const tournamentId = round.matches[index].tournament
+      const matchId = round.matches[index].id
       matches.push(
-      <div onClick={onPlay}>
+      <div onClick={() => onPlay(tournamentId, matchId, router)}>
         <Match topTeam={element.topTeam} bottomTeam={element.bottomTeam} key={index} match={undefined}/>
       </div>
       );

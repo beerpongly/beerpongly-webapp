@@ -40,10 +40,6 @@ function TournamentPlayer() {
       return roundCount;
     }
 
-    function onPlay() {
-      console.log("rats")
-    }
-
     function setFirstRound() {
       let matchesSet: boolean = false
       if (matches && tournaments && rounds) {
@@ -70,7 +66,6 @@ function TournamentPlayer() {
     function updateTournament(round: number) {
       let htmlRounds: JSX.Element[] = []
       let theRounds: RoundMatches[] = [];
-      // console.log(tournaments)
       let numOfTeams: number = 0;
       let matchups: Matchup[] = []
       if (matches && rounds && tournaments) {
@@ -78,71 +73,36 @@ function TournamentPlayer() {
         for (let i = 0; i < rounds.length; i++) {
           const theRound = rounds[i];
           if (theRound.round == round && tournaments.id == theRound.tournament) {
+            let roundMatches: Matches[] = []
             for (let j = 0; j < matches.length; j++) {
               const element = matches[j];
               if (element.round == theRound.id) {
                 const topTeam = {
-                  "team": "",
+                  "team": element.team1,
                   "position": 0
                 };
                 const bottomTeam = {
-                  "team": "",
+                  "team": element.team2,
                   "position": 0
                 };
                 matchups.push({
-                  "match": undefined,
+                  "match": element,
                   "topTeam": topTeam,
                   "bottomTeam": bottomTeam
                 });
+                roundMatches.push(element)
               }
             }
-            let finalRound: RoundMatches = {
-              "matches": [],
+            let tournamentRound: RoundMatches = {
+              "matches": roundMatches,
               "displayMatches": matchups,
               "round": round-i
             }
-            setPlayTournamentHTML(<Round onPlay={() => onPlay()} round={finalRound} key={finalRound.round}/>)
+            console.log(tournamentRound)
+            setPlayTournamentHTML(<Round round={tournamentRound} key={tournamentRound.round} router={router}/>)
           }
         }
       }
-      // console.log(numOfTeams)
-      // setPlayTournamentHTML()
-      // setPlayTournamentHTML(<PlayTournament id={tournaments.id} tournament_name={tournaments.tournament_name} round_robin={tournaments.round_robin} teams={tournaments.teams}></PlayTournament>)
-
-      // let roundCount = getRoundCount(numOfTeams)
-      // console.log(roundCount)
-
-      // let matchesCount = 1
-      // for (let i = 0; i < roundCount; i++) {
-      //   let matchups: Matchup[] = []
-      //   // for (let j = 1; j <= matchesCount; j++) {
-      //   //   const topTeam = {
-      //   //     "team": "",
-      //   //     "position": 0
-      //   //   };
-      //   //   const bottomTeam = {
-      //   //     "team": "",
-      //   //     "position": 0
-      //   //   };
-      //   //   matchups.push({
-      //   //     "match": undefined,
-      //   //     "topTeam": topTeam,
-      //   //     "bottomTeam": bottomTeam
-      //   //   });
-      //   // }
-      //   // theRounds.unshift({
-      //   //   "matches": [],
-      //   //   "displayMatches": matchups,
-      //   //   "round": roundCount-i
-      //   // })
-      //   matchesCount = matchesCount + matchesCount
-      // }
-      // console.log(rounds)
-      // for (let index = 0; index < theRounds.length; index++) {
-      //   htmlRounds.push(<Round onPlay={() => onPlay()} round={theRounds[index]} key={index}/>);
-      // }
-
-      // setPlayTournamentHTML(<Round onPlay={() => onPlay()} round={theRounds} key={index}/>)
     }
 
     const fetchTournaments = async () => {
