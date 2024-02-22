@@ -40,24 +40,53 @@ function TournamentPlayer() {
       return roundCount;
     }
 
-    function setFirstRound() {
+    async function setFirstRound() {
       let matchesSet: boolean = false
       if (matches && tournaments && rounds) {
-        for (let i = 0; i < matches.length; i++) {
-          const match = matches[i];
-          console.log("Team 1: " + match.team1 + " Team 2: " + match.team2)
-          if ((match.team1 != null && match.team1 != "") || (match.team2 != null && match.team2 != "")) {
-            matchesSet = true
+        let roundOneMatches: number[] = []
+        let firstRoundId: number | undefined = undefined
+        for (let j = 0; j < rounds.length; j++) {
+          const round = rounds[j];
+          if (round.round == 1) {
+            firstRoundId = round.id
           }
         }
-        if (!matchesSet ) {
-          console.log("setFirstRound")
-          console.log(matches)
-          console.log(tournaments)
-          for (let i = 0; i < matches.length; i++) {
-            const match = matches[i];
-            
+        for (let i = 0; i < matches.length; i++) {
+          
+          const match = matches[i];
+          console.log(match)
+          if (match.round == firstRoundId) {
+            console.log("Team 1: " + ((match.team1 != null && match.team1 != "")) + " Team 2: " + match.team2)
+            if ((match.team1 != null && match.team1 != "") || (match.team2 != null &&match.team2 != "")) {
+              matchesSet = true
+            } else {
+              roundOneMatches.push(i)
+            }
           }
+        }
+        console.log("here")
+        if (!matchesSet) {
+          console.log("setFirstRound")
+          console.log(roundOneMatches)
+          let tournamentCount = 0 
+          for (let i = 0; i < roundOneMatches.length; i++) {
+            const match = matches[roundOneMatches[i]];
+            if (tournamentCount < tournaments.teams.length) {
+              match.team1 = tournaments.teams[tournamentCount];
+            }
+            tournamentCount++;
+            if (tournamentCount < tournaments.teams.length) {
+              match.team2 = tournaments.teams[tournamentCount];
+            }
+            tournamentCount++;
+            console.log("New match: " + match)
+            const { data, error } = await supabase
+              .from('matches')
+              .update({ team1: match.team1, team2: match.team2 })
+              .eq('id', match.id)
+              .select()
+          }
+          fetchMatches()
         }
       }
       console.log("Set: " + matchesSet)
@@ -67,7 +96,7 @@ function TournamentPlayer() {
       let htmlRounds: JSX.Element[] = []
       let theRounds: RoundMatches[] = [];
       let numOfTeams: number = 0;
-      let matchups: Matchup[] = []
+      let matchUps: Matchup[] = []
       if (matches && rounds && tournaments) {
         numOfTeams = 0
         for (let i = 0; i < rounds.length; i++) {
@@ -85,7 +114,7 @@ function TournamentPlayer() {
                   "team": element.team2,
                   "position": 0
                 };
-                matchups.push({
+                matchUps.push({
                   "match": element,
                   "topTeam": topTeam,
                   "bottomTeam": bottomTeam
@@ -95,7 +124,7 @@ function TournamentPlayer() {
             }
             let tournamentRound: RoundMatches = {
               "matches": roundMatches,
-              "displayMatches": matchups,
+              "displayMatches": matchUps,
               "round": round-i
             }
             console.log(tournamentRound)
