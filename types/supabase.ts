@@ -6,7 +6,7 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-export interface Database {
+export type Database = {
   public: {
     Tables: {
       matches: {
@@ -14,7 +14,10 @@ export interface Database {
           created_at: string
           id: number
           match: number
+          next_match: number | null
           owner_user_id: string
+          previous_match_1: number | null
+          previous_match_2: number | null
           round: number
           team1: string
           team2: string
@@ -25,7 +28,10 @@ export interface Database {
           created_at?: string
           id?: number
           match: number
+          next_match?: number | null
           owner_user_id: string
+          previous_match_1?: number | null
+          previous_match_2?: number | null
           round: number
           team1?: string
           team2?: string
@@ -36,7 +42,10 @@ export interface Database {
           created_at?: string
           id?: number
           match?: number
+          next_match?: number | null
           owner_user_id?: string
+          previous_match_1?: number | null
+          previous_match_2?: number | null
           round?: number
           team1?: string
           team2?: string

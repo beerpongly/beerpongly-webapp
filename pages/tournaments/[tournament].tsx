@@ -24,7 +24,7 @@ function TournamentPlayer() {
     const [rounds, setRounds] = useState<Rounds[]>()
     const [matches, setMatches] = useState<Matches[]>()
     const [playTournamentHTML, setPlayTournamentHTML] = useState(<div></div>)
-    const [addTournament, setAddTournament] = useState(false);
+    const [addTournament, setAddTournament] = useState<boolean>(false);
     const router = useRouter();
     const [currentRound, setCurrentRound] = useState(1)
     console.log(router.asPath)
@@ -39,6 +39,74 @@ function TournamentPlayer() {
       }
       return roundCount;
     }
+    // const getMatches = async (tournament: Tournaments) => {
+    //   const { data: data, error } = await supabase
+    //     .from('matches')
+    //     .select('*')
+    //     .order('id', { ascending: true })
+    //     .eq('tournament', tournament.id)
+    //   if (error) {
+    //     console.log(error)
+    //     return
+    //   } else {
+    //     setTournamentMatches(data)
+    //   }
+    // }
+  
+    // const getRounds = async (tournament: Tournaments, tournamentMatches: Matches[]) => {
+    //   const { data: data, error } = await supabase
+    //     .from('rounds')
+    //     .select('*')
+    //     .order('round', { ascending: true })
+    //     .eq('tournament', tournament.id)
+    //   if (error) {
+    //     console.log(error)
+    //     return
+    //   } else {
+    //     setTournamentRounds(data)
+    //   }
+    // }
+  
+    const linkMatches = async () => {
+      if (matches && rounds) {
+        for (let i = 0; i < rounds.length; i++) {
+            const tournamentRound = rounds[i]
+          for (let j = 0; j < matches.length; j++) {
+            const tournamentMatch = matches[j]
+            if (tournamentMatch.round == tournamentRound.id) {
+              // add previous rounds
+              if (tournamentRound.round > 1) {
+                for (let k = 0; k < matches.length; k++) {
+                  const previousMatch = matches[k];
+                  if (previousMatch.round == rounds[i - 1].id && previousMatch.match == (tournamentMatch.match * 2)) {
+                    tournamentMatch.previous_match_2 = previousMatch.id;
+                  }
+                  if (previousMatch.round == rounds[i - 1].id && previousMatch.match == ((tournamentMatch.match * 2) - 1)) {
+                    tournamentMatch.previous_match_1 = previousMatch.id;
+                  }
+                }
+              }
+              // add next round
+              if (tournamentRound.round < rounds.length) {
+                for (let k = 0; k < matches.length; k++) {
+                  const nextMatch = matches[k];
+                  if (nextMatch.round == rounds[i + 1].id && nextMatch.match == Math.ceil(tournamentMatch.match/2)) {
+                    tournamentMatch.next_match = nextMatch.id;
+                  }
+                }
+              }
+              
+              const { data, error } = await supabase
+                .from('matches')
+                .update(tournamentMatch)
+                .eq('id', tournamentMatch.id)
+                .select()
+            }
+          }
+        }
+        fetchMatches()
+      }
+    };
 
     async function setFirstRound() {
       let matchesSet: boolean = false
@@ -86,7 +154,7 @@ function TournamentPlayer() {
               .eq('id', match.id)
               .select()
           }
-          fetchMatches()
+          linkMatches()
         }
       }
       console.log("Set: " + matchesSet)
@@ -165,7 +233,7 @@ function TournamentPlayer() {
                 .from('rounds')
                 .select('*')
                 .eq('tournament', Number(router.query.tournament))
-                .order('id', { ascending: true })
+                .order('round', { ascending: true })
             if (error) console.log('error', error)
             else {
                 console.log(data)
@@ -173,7 +241,7 @@ function TournamentPlayer() {
                   setRounds(data);
                 }
                 fetchMatches()
-            } // Update the state with fetched data
+            }
         } catch (error) {
             console.error('Error fetching rounds:', error);
         }
@@ -192,9 +260,8 @@ function TournamentPlayer() {
                 console.log(data)
                 if (!matches) {
                   setMatches(data)
-                } // setTournaments(data[0]);
-                // fetchRounds()
-              } // Update the state with fetched data
+                }
+              }
             }
         } catch (error) {
             console.error('Error fetching matches:', error);

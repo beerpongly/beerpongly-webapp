@@ -1,6 +1,6 @@
 // TournamentForm.js
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Database } from '@/types/supabase'
 import { Session, User, useSupabaseClient } from '@supabase/auth-helpers-react'
 import { TournamentFormProps } from '../types/form-types'; // Adjust the path based on your project structure
@@ -30,6 +30,9 @@ function TournamentForm({ onSubmit, session }: TournamentFormProps) {
   const [tournamentName, setTournamentName] = useState('');
   const [roundRobin, setRoundRobin] = useState(false);
   const [teams, setTeams] = useState(['']);
+  const [tournamentMatches, setTournamentMatches] = useState<Matches[]>([]);
+  const [tournamentRounds, setTournamentRounds] = useState<Rounds[]>([]);
+  const [finishedSetup, setFinishedSetup] = useState<boolean>(false);
 
   const user = session.user
 
@@ -150,7 +153,6 @@ function TournamentForm({ onSubmit, session }: TournamentFormProps) {
       alert('Team names must be unique');
       return;
     }
-
     
     const { data, error } = await supabase
     .from('tournaments')
