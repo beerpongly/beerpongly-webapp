@@ -6,7 +6,6 @@ import { Session, User, useSupabaseClient } from '@supabase/auth-helpers-react'
 import { TournamentFormProps } from '../types/form-types'; // Adjust the path based on your project structure
 
 type Tournaments = Database['public']['Tables']['tournaments']['Row']
-type Rounds = Database['public']['Tables']['rounds']['Row']
 type Matches = Database['public']['Tables']['matches']['Row']
 
 interface Round {
@@ -31,7 +30,6 @@ function TournamentForm({ onSubmit, session }: TournamentFormProps) {
   const [roundRobin, setRoundRobin] = useState(false);
   const [teams, setTeams] = useState(['']);
   const [tournamentMatches, setTournamentMatches] = useState<Matches[]>([]);
-  const [tournamentRounds, setTournamentRounds] = useState<Rounds[]>([]);
   const [finishedSetup, setFinishedSetup] = useState<boolean>(false);
 
   const user = session.user
@@ -62,20 +60,21 @@ function TournamentForm({ onSubmit, session }: TournamentFormProps) {
     }
   };
 
-  const addMatches = async (round: Rounds, teams: string[]) => {
+  const addMatches = async (round: number, teams: string[], tournament: Tournaments) => {
     const { data: data, error } = await supabase
       .from('matches')
       .select('*')
       .order('id', { ascending: true })
-      .eq('rounds', round.id)
+      .eq('rounds', round)
       console.log("rounds data" + data)
       console.log("rounds data length" + data?.length)
     if (!data || data.length == 0) {
       let matches: Match[] = []
       let matchCount: number = 1
+      console.log(teams)
       for (let i = 0; i < teams.length; i=i+2) {
         console.log("match" + i)
-        matches.push({ team1: "", team2: "", tournament: round.tournament, round: round.id, owner_user_id: user.id, match: matchCount })
+        matches.push({ team1: "", team2: "", tournament: tournament.id, round: round, owner_user_id: user.id, match: matchCount })
         matchCount++;
       }
       const { data, error } = await supabase
@@ -90,51 +89,29 @@ function TournamentForm({ onSubmit, session }: TournamentFormProps) {
   };
 
   const addRounds = async (tournament: Tournaments) => {
-    const { data: data, error } = await supabase
-      .from('rounds')
-      .select('*')
-      .order('id', { ascending: true })
-      .eq('tournament', tournament.id)
-      console.log("data" + data)
-      console.log("data length" + data?.length)
-    if (!data || data.length == 0) {
-      let currentTeams = tournament.teams.length;
-      let roundCount = 0;
+    let currentTeams = tournament.teams.length;
+    let roundCount = 0;
 
-      while (currentTeams > 1) {
-        currentTeams /= 2;
-        roundCount++;
+    while (currentTeams > 1) {
+      currentTeams /= 2;
+      roundCount++;
+    }
+    console.log("round count: " + roundCount)
+    let teamsRounds: string[][] = []
+    // roundCount = 1;
+    let count = 1;
+    for (let i = roundCount; i > 0; i--) {
+      console.log(i)
+      let teams: string[] = []
+      for (let j = 0; j < Math.pow(2, i); j++) {
+        teams.push("")
       }
-      console.log("round count: " + roundCount)
-      let teamsRounds: string[][] = []
-      // roundCount = 1;
-      let count = 1;
-      let rounds: Round[] = []
-      for (let i = roundCount; i > 0; i--) {
-        console.log(i)
-        let teams: string[] = []
-        for (let j = 0; j < Math.pow(2, i); j++) {
-          teams.push("")
-        }
-        console.log({ teams: teams, tournament: tournament.id, round: count, owner_user_id: user.id })
-        rounds.push({ teams: teams, tournament: tournament.id, round: count, owner_user_id: user.id })
-        teamsRounds.push(teams)
-        count++;
-      }
-      const { data, error } = await supabase
-        .from('rounds')
-        .insert(rounds)
-        .select()
-      console.log("data" + data)
-      if (error) {
-        console.log(error)
-      }
-      if (data) {
-        console.log(data)
-        for (let i=0; i<data.length; i++) {
-          addMatches(data[i], teamsRounds[i])
-        }
-      }
+      console.log({ teams: teams, tournament: tournament.id, round: count, owner_user_id: user.id })
+      teamsRounds.push(teams)
+      count++;
+    }
+    for (let i=0; i < roundCount; i++) {
+      addMatches(i+1, teamsRounds[i], tournament)
     }
   };
 

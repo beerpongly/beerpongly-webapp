@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react'
 import NavBar from '@/components/navbar';
 
 type Tournaments = Database['public']['Tables']['tournaments']['Row']
-type Rounds = Database['public']['Tables']['rounds']['Row']
 type Matches = Database['public']['Tables']['matches']['Row']
 
 function TournamentPlayer() {
@@ -73,7 +72,10 @@ function TournamentPlayer() {
           //   setMatch(data[0])
           // }
         }
-        router.push('/tournaments/' + match.tournament)
+        router.push({
+          pathname: '/tournaments/' + match.tournament,
+          query: {round: match.round}
+        })
       }
     }
 

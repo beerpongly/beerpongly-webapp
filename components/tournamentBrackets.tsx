@@ -8,7 +8,6 @@ import NavBar from '@/components/navbar';
 import { useRouter, NextRouter } from 'next/router'
 
 type Tournaments = Database['public']['Tables']['tournaments']['Row']
-type Rounds = Database['public']['Tables']['rounds']['Row']
 type Matches = Database['public']['Tables']['matches']['Row']
 
 export interface Tournament {
@@ -85,6 +84,7 @@ export interface Tournament {
  export function Round({round, router}: Games) {
     let matches = []
     for (let index = 0; index < round.displayMatches.length; index++) {
+      console.log("round: " + index)
       const element = round.displayMatches[index];
       const tournamentId = round.matches[index].tournament
       const matchId = round.matches[index].id

@@ -7,7 +7,6 @@ import NavBar from '@/components/navbar';
 import { useRouter } from 'next/navigation';
 
 type Tournaments = Database['public']['Tables']['tournaments']['Row']
-type Rounds = Database['public']['Tables']['rounds']['Row']
 type Matches = Database['public']['Tables']['matches']['Row']
 
 

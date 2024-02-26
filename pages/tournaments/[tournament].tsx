@@ -7,7 +7,6 @@ import { BracketTeam, Matchup, Round, RoundMatches, Tournament } from '@/compone
 import NavBar from '@/components/navbar';
 
 type Tournaments = Database['public']['Tables']['tournaments']['Row']
-type Rounds = Database['public']['Tables']['rounds']['Row']
 type Matches = Database['public']['Tables']['matches']['Row']
 
 function TournamentPlayer() {
@@ -21,13 +20,11 @@ function TournamentPlayer() {
     const supabase = useSupabaseClient<Database>()
     const session = useSession()
     const [tournaments, setTournaments] = useState<Tournaments>()
-    const [rounds, setRounds] = useState<Rounds[]>()
     const [matches, setMatches] = useState<Matches[]>()
     const [playTournamentHTML, setPlayTournamentHTML] = useState(<div></div>)
     const [addTournament, setAddTournament] = useState<boolean>(false);
     const router = useRouter();
     const [currentRound, setCurrentRound] = useState(1)
-    console.log(router.asPath)
 
     function getRoundCount(numberOfTeams: number) {
       let roundCount = 0;
@@ -66,31 +63,41 @@ function TournamentPlayer() {
     //     setTournamentRounds(data)
     //   }
     // }
+
+    function getRoundLength(matches: Matches[]): number {
+      let roundLength: number = 1
+      for (let i = 0; i < matches.length; i++) {
+        if (roundLength < matches[i].round) {
+          roundLength = matches[i].round;
+        }
+      }
+      return roundLength
+    }
   
     const linkMatches = async () => {
-      if (matches && rounds) {
-        for (let i = 0; i < rounds.length; i++) {
-            const tournamentRound = rounds[i]
+      if (matches) {
+        let roundLength: number = getRoundLength(matches)
+        for (let i = 1; i <= roundLength; i++) {
           for (let j = 0; j < matches.length; j++) {
             const tournamentMatch = matches[j]
-            if (tournamentMatch.round == tournamentRound.id) {
+            if (tournamentMatch.round == i) {
               // add previous rounds
-              if (tournamentRound.round > 1) {
+              if (tournamentMatch.round > 1) {
                 for (let k = 0; k < matches.length; k++) {
                   const previousMatch = matches[k];
-                  if (previousMatch.round == rounds[i - 1].id && previousMatch.match == (tournamentMatch.match * 2)) {
+                  if (previousMatch.round == i - 1 && previousMatch.match == (tournamentMatch.match * 2)) {
                     tournamentMatch.previous_match_2 = previousMatch.id;
                   }
-                  if (previousMatch.round == rounds[i - 1].id && previousMatch.match == ((tournamentMatch.match * 2) - 1)) {
+                  if (previousMatch.round == i - 1 && previousMatch.match == ((tournamentMatch.match * 2) - 1)) {
                     tournamentMatch.previous_match_1 = previousMatch.id;
                   }
                 }
               }
               // add next round
-              if (tournamentRound.round < rounds.length) {
+              if (tournamentMatch.round < roundLength) {
                 for (let k = 0; k < matches.length; k++) {
                   const nextMatch = matches[k];
-                  if (nextMatch.round == rounds[i + 1].id && nextMatch.match == Math.ceil(tournamentMatch.match/2)) {
+                  if (nextMatch.round == i + 1 && nextMatch.match == Math.ceil(tournamentMatch.match/2)) {
                     tournamentMatch.next_match = nextMatch.id;
                   }
                 }
@@ -110,21 +117,13 @@ function TournamentPlayer() {
 
     async function setFirstRound() {
       let matchesSet: boolean = false
-      if (matches && tournaments && rounds) {
+      if (matches && tournaments) {
+        let roundLength: number = getRoundLength(matches)
         let roundOneMatches: number[] = []
-        let firstRoundId: number | undefined = undefined
-        for (let j = 0; j < rounds.length; j++) {
-          const round = rounds[j];
-          if (round.round == 1) {
-            firstRoundId = round.id
-          }
-        }
         for (let i = 0; i < matches.length; i++) {
-          
           const match = matches[i];
-          console.log(match)
-          if (match.round == firstRoundId) {
-            console.log("Team 1: " + ((match.team1 != null && match.team1 != "")) + " Team 2: " + match.team2)
+          if (match.round == 1) {
+            // console.log("Team 1: " + ((match.team1 != null && match.team1 != "")) + " Team 2: " + match.team2)
             if ((match.team1 != null && match.team1 != "") || (match.team2 != null &&match.team2 != "")) {
               matchesSet = true
             } else {
@@ -132,10 +131,7 @@ function TournamentPlayer() {
             }
           }
         }
-        console.log("here")
         if (!matchesSet) {
-          console.log("setFirstRound")
-          console.log(roundOneMatches)
           let tournamentCount = 0 
           for (let i = 0; i < roundOneMatches.length; i++) {
             const match = matches[roundOneMatches[i]];
@@ -147,7 +143,6 @@ function TournamentPlayer() {
               match.team2 = tournaments.teams[tournamentCount];
             }
             tournamentCount++;
-            console.log("New match: " + match)
             const { data, error } = await supabase
               .from('matches')
               .update({ team1: match.team1, team2: match.team2 })
@@ -157,93 +152,68 @@ function TournamentPlayer() {
           linkMatches()
         }
       }
-      console.log("Set: " + matchesSet)
     }
 
     function updateTournament(round: number) {
-      let htmlRounds: JSX.Element[] = []
-      let theRounds: RoundMatches[] = [];
-      let numOfTeams: number = 0;
       let matchUps: Matchup[] = []
-      if (matches && rounds && tournaments) {
-        numOfTeams = 0
-        for (let i = 0; i < rounds.length; i++) {
-          const theRound = rounds[i];
-          if (theRound.round == round && tournaments.id == theRound.tournament) {
-            let roundMatches: Matches[] = []
-            for (let j = 0; j < matches.length; j++) {
-              const element = matches[j];
-              if (element.round == theRound.id) {
-                const topTeam = {
-                  "team": element.team1,
-                  "position": 0
-                };
-                const bottomTeam = {
-                  "team": element.team2,
-                  "position": 0
-                };
-                matchUps.push({
-                  "match": element,
-                  "topTeam": topTeam,
-                  "bottomTeam": bottomTeam
-                });
-                roundMatches.push(element)
-              }
-            }
-            let tournamentRound: RoundMatches = {
-              "matches": roundMatches,
-              "displayMatches": matchUps,
-              "round": round-i
-            }
-            console.log(tournamentRound)
-            setPlayTournamentHTML(<Round round={tournamentRound} key={tournamentRound.round} router={router}/>)
+      if (matches && tournaments) {
+        console.log("matches: " + matches)
+        let roundLength: number = getRoundLength(matches)
+        console.log("Number of rounds: " + roundLength)
+        let roundMatches: Matches[] = []
+        for (let j = 0; j < matches.length; j++) {
+          const element = matches[j];
+          console.log("match round: " + element.round)
+          console.log("current round" + round)
+          console.log("tournament id: " + tournaments.id)
+          console.log("current tournament" + element.tournament)
+          if (element.round == round && tournaments.id == element.tournament) {
+
+            const topTeam = {
+              "team": element.team1,
+              "position": 0
+            };
+            const bottomTeam = {
+              "team": element.team2,
+              "position": 0
+            };
+            matchUps.push({
+              "match": element,
+              "topTeam": topTeam,
+              "bottomTeam": bottomTeam
+            });
+            roundMatches.push(element)
           }
         }
+        let tournamentRound: RoundMatches = {
+          "matches": roundMatches,
+          "displayMatches": matchUps,
+          "round": round
+        }
+        console.log("round matches: " + roundMatches.length)
+        setPlayTournamentHTML(<Round round={tournamentRound} key={tournamentRound.round} router={router}/>)
       }
     }
 
     const fetchTournaments = async () => {
         try {
-            // Example: Fetch tournaments from an API
-            // console.log(router)
             if (typeof router.query.tournament == "string") {
               const { data: data, error } = await supabase
                 .from('tournaments')
                 .select('*')
                 .eq('id', Number(router.query.tournament))
                 .order('id', { ascending: true })
-              if (error || data.length != 1) console.log('error', error)
+              if (error || data.length != 1) console.error('error', error)
               else {
                 if (!tournaments) {
                   setTournaments(data[0]);
                 }
                 // setTournaments(data[0]);
-                fetchRounds()
+                fetchMatches()
               } // Update the state with fetched data
             }
         } catch (error) {
             console.error('Error fetching tournaments:', error);
-        }
-    };
-
-    const fetchRounds = async () => {
-        try {
-            // Example: Fetch tournaments from an API
-            const { data: data, error } = await supabase
-                .from('rounds')
-                .select('*')
-                .eq('tournament', Number(router.query.tournament))
-                .order('round', { ascending: true })
-            if (error) console.log('error', error)
-            else {
-                console.log(data)
-                if (!rounds) {
-                  setRounds(data);
-                }
-                fetchMatches()
-            }
-        } catch (error) {
-            console.error('Error fetching rounds:', error);
         }
     };
 
@@ -255,9 +225,8 @@ function TournamentPlayer() {
                 .select('*')
                 .eq('tournament', Number(router.query.tournament))
                 .order('id', { ascending: true })
-              if (error) console.log('error', error)
+              if (error) console.error('error', error)
               else {
-                console.log(data)
                 if (!matches) {
                   setMatches(data)
                 }
@@ -276,7 +245,6 @@ function TournamentPlayer() {
 
     useEffect(() => {
       if (router.isReady) {
-        console.log(router.query);
         fetchTournaments();
       }
     }, [router.isReady]);

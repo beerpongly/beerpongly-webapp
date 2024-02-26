@@ -61,56 +61,7 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "matches_round_fkey"
-            columns: ["round"]
-            isOneToOne: false
-            referencedRelation: "rounds"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "matches_tournament_fkey"
-            columns: ["tournament"]
-            isOneToOne: false
-            referencedRelation: "tournaments"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
-      rounds: {
-        Row: {
-          created_at: string
-          id: number
-          owner_user_id: string
-          round: number
-          teams: string[]
-          tournament: number
-        }
-        Insert: {
-          created_at?: string
-          id?: number
-          owner_user_id: string
-          round: number
-          teams: string[]
-          tournament: number
-        }
-        Update: {
-          created_at?: string
-          id?: number
-          owner_user_id?: string
-          round?: number
-          teams?: string[]
-          tournament?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "rounds_owner_user_id_fkey"
-            columns: ["owner_user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "rounds_tournament_fkey"
             columns: ["tournament"]
             isOneToOne: false
             referencedRelation: "tournaments"
