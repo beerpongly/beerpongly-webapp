@@ -274,9 +274,6 @@ function TournamentPlayer() {
     return (
     <div>
       <NavBar></NavBar>
-      <p>Tournament Name: {tournaments?.tournament_name}</p>
-      <p>Round Robin: {tournaments?.round_robin}</p>
-      <p>Teams: {tournaments?.teams}</p><br />
       <div>
         {playTournamentHTML}
       </div>
