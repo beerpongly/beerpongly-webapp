@@ -11,6 +11,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@dnd-kit/sortable": "^8.0.0",
     "@hello-pangea/dnd": "^16.5.0",
     "@next/font": "13.1.6",
     "@supabase/auth-helpers-nextjs": "^0.8.7",
