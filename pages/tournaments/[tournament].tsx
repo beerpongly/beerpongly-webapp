@@ -151,6 +151,7 @@ function TournamentPlayer() {
           }
           linkMatches()
         }
+        // update play html
       }
     }
 
@@ -271,6 +272,13 @@ function TournamentPlayer() {
         setCurrentRound(currentRound - 1)
       }
     }
+
+    function editTournament() {
+      if (tournaments) {
+        router.push("/tournaments/" + tournaments.id + "/edit")
+      }
+    }
+
     return (
     <div>
       <NavBar></NavBar>
@@ -282,6 +290,7 @@ function TournamentPlayer() {
         <button onClick={nextRound}>Next</button>
         <p>Round: {currentRound}</p>
       </div>
+      <button onClick={editTournament}>Edit</button>
     </div>)
     }
 
