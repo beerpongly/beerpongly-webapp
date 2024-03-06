@@ -30,7 +30,7 @@ type Matches = Database['public']['Tables']['matches']['Row']
 const SortableList: React.FC = () => {
   const router = useRouter();
   const supabase = useSupabaseClient<Database>()
-  const [tournaments, setTournaments] = useState<Tournament>([])
+  const [tournaments, setTournaments] = useState<Tournament>()
   const [list, setList] = useState<ListItem[]>([
     // { id: 1, text: 'Item 1' },
     // { id: 2, text: 'Item 2' },
@@ -81,13 +81,15 @@ const SortableList: React.FC = () => {
       const element = list[i];
       teams.push(element.text);
     }
-    const { data, error } = await supabase
-      .from('tournaments')
-      .update({ teams: teams })
-      .eq('id', tournaments.id)
-      .select()
+    if (tournaments) {
+      const { data, error } = await supabase
+        .from('tournaments')
+        .update({ teams: teams })
+        .eq('id', tournaments.id)
+        .select()
 
-    router.push('/tournaments/' + tournaments.id)
+      router.push('/tournaments/' + tournaments.id)
+    }
   }
 
   const refreshData = () => {
@@ -122,9 +124,12 @@ const SortableList: React.FC = () => {
 
   function displayTournaments() {
     const listClone: ListItem[] = []
-    for (let i = 0; i < tournaments.teams.length; i++) {
-      const team = tournaments.teams[i];
-      listClone.push({id: i + 1, text: team})
+    console.log(tournaments)
+    if (tournaments) {
+      for (let i = 0; i < tournaments.teams.length; i++) {
+        const team = tournaments.teams[i];
+        listClone.push({id: i + 1, text: team})
+      }
     }
     setList(listClone)
   }
