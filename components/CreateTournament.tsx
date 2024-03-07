@@ -31,6 +31,7 @@ function TournamentForm({ onSubmit, session }: TournamentFormProps) {
   const [teams, setTeams] = useState(['']);
   const [tournamentMatches, setTournamentMatches] = useState<Matches[]>([]);
   const [finishedSetup, setFinishedSetup] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState(<div></div>)
 
   const user = session.user
 
@@ -41,7 +42,9 @@ function TournamentForm({ onSubmit, session }: TournamentFormProps) {
   };
 
   const handleAddTeam = () => {
-    setTeams([...teams, '']);
+    if (teams.length < 16) {
+      setTeams([...teams, '']);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
@@ -57,6 +60,14 @@ function TournamentForm({ onSubmit, session }: TournamentFormProps) {
           newInput.focus();
         }
       }
+    }
+  };
+
+  const handleDeleteTeam = (index: number) => {
+    if (index < teams.length && teams.length > 1) {
+      const newTeams = [...teams];
+      newTeams.splice(index, 1);
+      setTeams(newTeams);
     }
   };
 
@@ -120,17 +131,17 @@ function TournamentForm({ onSubmit, session }: TournamentFormProps) {
   
     // Validate the form data before submitting
     if (!tournamentName || teams.some(team => team === '')) {
-      alert('Please fill out all required fields');
+      setErrorMessage(<div className='font-bold text-red-500'>Please fill out all required Teams!</div>);
       return;
     }
-  
+
     // Check for duplicate team names
     const uniqueTeams = [...new Set(teams)];
     if (uniqueTeams.length !== teams.length) {
-      alert('Team names must be unique');
+      setErrorMessage(<div className='font-bold text-red-500'>Team names must be unique!</div>);
       return;
     }
-    
+
     const { data, error } = await supabase
     .from('tournaments')
     .insert([
@@ -171,7 +182,7 @@ function TournamentForm({ onSubmit, session }: TournamentFormProps) {
           />
         </div>
 
-        <div className="mb-4">
+        {/* <div className="mb-4">
           <label className="flex items-center text-sm font-medium text-gray-700">
             <input
               type="checkbox"
@@ -181,7 +192,7 @@ function TournamentForm({ onSubmit, session }: TournamentFormProps) {
             />
             Round Robin
           </label>
-        </div>
+        </div> */}
 
         <div className="mb-4">
           <label htmlFor="teams" className="block text-sm font-medium text-gray-700">
@@ -199,6 +210,13 @@ function TournamentForm({ onSubmit, session }: TournamentFormProps) {
                 onChange={(e) => handleTeamChange(index, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(e, index)}
               />
+              <button
+                type="button"
+                className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+                onClick={() => handleDeleteTeam(index)}
+              >
+                Delete Team
+              </button>
             </div>
           ))}
 
@@ -210,7 +228,9 @@ function TournamentForm({ onSubmit, session }: TournamentFormProps) {
             Add Team
           </button>
         </div>
-
+        <div>
+          {errorMessage}
+        </div>
         <div className="flex justify-end">
           <button
             type="submit"
