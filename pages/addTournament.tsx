@@ -10,17 +10,12 @@ function AddTournament() {
   const router = useRouter();
 
   if (session) {
-    const addTournamentSubmit: TournamentFormProps['onSubmit'] = (formData) => {
-      // Handle the form data (e.g., send it to an API, save it to state, etc.)
-      console.log(formData);
-      router.push("/tournaments")
-    };
 
     return (
       <div>
         <NavBar></NavBar>
         <div>
-          <TournamentForm onSubmit={addTournamentSubmit} session={session} />
+          <TournamentForm session={session} />
         </div>
       </div>
     );

@@ -5,6 +5,7 @@ import { Database } from '@/types/supabase'
 import { Session, User, useSupabaseClient } from '@supabase/auth-helpers-react'
 import { TournamentFormProps } from '../types/form-types'; // Adjust the path based on your project structure
 import AddTournament from '@/pages/addTournament';
+import { useRouter } from 'next/navigation';
 
 type Tournaments = Database['public']['Tables']['tournaments']['Row']
 type Matches = Database['public']['Tables']['matches']['Row']
@@ -25,7 +26,7 @@ interface Match {
   match: number
 }
 
-function TournamentForm({ onSubmit, session }: TournamentFormProps) {
+function TournamentForm({ session }: TournamentFormProps) {
   const supabase = useSupabaseClient<Database>()
   const [tournamentName, setTournamentName] = useState('');
   const [roundRobin, setRoundRobin] = useState(false);
@@ -33,6 +34,7 @@ function TournamentForm({ onSubmit, session }: TournamentFormProps) {
   const [tournamentMatches, setTournamentMatches] = useState<Matches[]>([]);
   const [finishedSetup, setFinishedSetup] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState(<div></div>)
+  const router = useRouter();
 
   const user = session.user
 
@@ -96,6 +98,10 @@ function TournamentForm({ onSubmit, session }: TournamentFormProps) {
       if (error) {
         console.log(error)
       }
+      if (data) {
+        // Call the onSubmit function with the form data
+        router.push('/tournaments/' + tournament.id + "/edit")
+      }
       console.log("matches data" + data)
     }
   };
@@ -135,8 +141,8 @@ function TournamentForm({ onSubmit, session }: TournamentFormProps) {
     ])
     .select()
 
-    if (data) {
-      console.log(data.length)
+    if (data && data.length == 1) {
+      console.log(data)
       for (let i=0; i<data.length; i++) {
         addRounds(data[i])
       }
@@ -167,13 +173,6 @@ function TournamentForm({ onSubmit, session }: TournamentFormProps) {
     }
     if (data!.length < 5) {
       AddTournament()
-
-      // Call the onSubmit function with the form data
-      onSubmit({
-        tournamentName,
-        roundRobin,
-        teams: uniqueTeams, // Use uniqueTeams to eliminate duplicates
-      });
     } else {
       setErrorMessage(<div className='font-bold text-red-500'>You cannot have more that 5 Tournaments!</div>);
       return;

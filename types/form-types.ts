@@ -8,7 +8,6 @@ export type CreateTournamentForm = {
   };
   
 export type TournamentFormProps = {
-      onSubmit: (createTournamentForm: CreateTournamentForm) => void;
       session: Session;
 };
   

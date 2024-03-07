@@ -50,6 +50,22 @@ function TournamentViewer() {
       
     };
 
+
+    const deleteTournament = async (tournament: Tournaments) => {
+      // Handle deleting the selected tournament's matches
+      const { } = await supabase
+        .from('matches')
+        .delete()
+        .eq('tournament', tournament.id)
+      // Handle deleting the selected tournament
+      const { error } = await supabase
+        .from('tournaments')
+        .delete()
+        .eq('id', tournament.id)
+      console.log(error)
+      fetchTournaments();
+    };
+
     return (
       <div>
         <NavBar></NavBar>
@@ -113,11 +129,18 @@ function TournamentViewer() {
                               ))}
                             </td>
                             <td className="px-4 py-3 flex items-center justify-end">
-                              <button id="apple-imac-27-dropdown-button" data-dropdown-toggle="apple-imac-27-dropdown" className="inline-flex items-center text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 p-1.5 dark:hover-bg-gray-800 text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none dark:text-gray-400 dark:hover:text-gray-100" type="button">
+                            <button
+                              type="button"
+                              className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+                              onClick={() => deleteTournament(tournament)}
+                            >
+                              Delete
+                            </button>
+                              {/* <button id="apple-imac-27-dropdown-button" data-dropdown-toggle="apple-imac-27-dropdown" className="inline-flex items-center text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 p-1.5 dark:hover-bg-gray-800 text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none dark:text-gray-400 dark:hover:text-gray-100" type="button">
                                 <svg className="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                   <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
                                 </svg>
-                              </button>
+                              </button> */}
                               {/* this doesnt work, should add in tho */}
                               {/* <div id="apple-imac-27-dropdown" className="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
                                                             <ul className="py-1 text-sm" aria-labelledby="apple-imac-27-dropdown-button">
