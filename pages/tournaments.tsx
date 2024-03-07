@@ -15,6 +15,7 @@ function TournamentViewer() {
   const session = useSession()
   const [tournaments, setTournaments] = useState<Tournaments[]>([])
   const router = useRouter();
+  const [errorMessage, setErrorMessage] = useState("")
 
   const fetchTournaments = async () => {
     try {
@@ -41,7 +42,12 @@ function TournamentViewer() {
     const addNewTournament = () => {
       // Handle the form data (e.g., send it to an API, save it to state, etc.)
       console.log("creating tournament");
-      router.push("/addTournament")
+      if (tournaments.length >= 5) {
+        setErrorMessage("You cannot have more than 5 Tournaments at Once!")
+      } else {
+        router.push("/addTournament")
+      }
+      
     };
 
     return (
@@ -79,8 +85,9 @@ function TournamentViewer() {
                         <svg className="h-3.5 w-3.5 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                           <path clipRule="evenodd" fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
                         </svg>
-                        Add product
+                        Add Tournament
                       </button>
+                      <div className='font-bold text-red-500'>{errorMessage}</div>
                     </div>
                   </div>
                   <div className="overflow-x-auto">

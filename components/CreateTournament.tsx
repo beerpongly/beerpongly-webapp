@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Database } from '@/types/supabase'
 import { Session, User, useSupabaseClient } from '@supabase/auth-helpers-react'
 import { TournamentFormProps } from '../types/form-types'; // Adjust the path based on your project structure
+import AddTournament from '@/pages/addTournament';
 
 type Tournaments = Database['public']['Tables']['tournaments']['Row']
 type Matches = Database['public']['Tables']['matches']['Row']
@@ -126,6 +127,22 @@ function TournamentForm({ onSubmit, session }: TournamentFormProps) {
     }
   };
 
+  const AddTournament = async () => {
+    const { data, error } = await supabase
+    .from('tournaments')
+    .insert([
+      { owner_user_id: user.id, round_robin: roundRobin, tournament_name: tournamentName, teams: teams},
+    ])
+    .select()
+
+    if (data) {
+      console.log(data.length)
+      for (let i=0; i<data.length; i++) {
+        addRounds(data[i])
+      }
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
   
@@ -144,24 +161,23 @@ function TournamentForm({ onSubmit, session }: TournamentFormProps) {
 
     const { data, error } = await supabase
     .from('tournaments')
-    .insert([
-      { owner_user_id: user.id, round_robin: roundRobin, tournament_name: tournamentName, teams: teams},
-    ])
-    .select()
-
+    .select('*')
     if (data) {
-      console.log(data.length)
-      for (let i=0; i<data.length; i++) {
-        addRounds(data[i])
-      }
+      console.log(data)
     }
+    if (data!.length < 5) {
+      AddTournament()
 
-    // Call the onSubmit function with the form data
-    onSubmit({
-      tournamentName,
-      roundRobin,
-      teams: uniqueTeams, // Use uniqueTeams to eliminate duplicates
-    });
+      // Call the onSubmit function with the form data
+      onSubmit({
+        tournamentName,
+        roundRobin,
+        teams: uniqueTeams, // Use uniqueTeams to eliminate duplicates
+      });
+    } else {
+      setErrorMessage(<div className='font-bold text-red-500'>You cannot have more that 5 Tournaments!</div>);
+      return;
+    }
   };
 
   return (
