@@ -256,6 +256,12 @@ function TournamentPlayer() {
       }
     }
 
+    function goToWinnersPage() {
+      if (tournaments) {
+        router.push("/tournaments/" + tournaments.id + "/winner")
+      }
+    }
+
     return (
     <div>
       <NavBar></NavBar>
@@ -268,6 +274,7 @@ function TournamentPlayer() {
         <p>Round: {currentRound}</p>
       </div>
       <button onClick={editTournament}>Edit</button>
+      <button onClick={goToWinnersPage}>Winners Page</button>
     </div>)
     }
 
