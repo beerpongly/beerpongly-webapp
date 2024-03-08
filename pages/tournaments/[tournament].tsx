@@ -3,7 +3,7 @@ import { Database } from '@/types/supabase'
 import { useSession, useSupabaseClient } from '@supabase/auth-helpers-react'
 import { useEffect, useState } from 'react'
 import { TournamentFormProps } from '../../types/form-types'; // Adjust the path based on your project structure
-import { BracketTeam, Matchup, Round, RoundMatches, Tournament } from '@/components/tournamentBrackets';
+import { Matchup, Round, RoundMatches, Tournament } from '@/components/tournamentBrackets';
 import NavBar from '@/components/navbar';
 
 type Tournaments = Database['public']['Tables']['tournaments']['Row']
@@ -156,43 +156,20 @@ function TournamentPlayer() {
     }
 
     function updateTournament(round: number) {
-      let matchUps: Matchup[] = []
       if (matches && tournaments) {
-        console.log("matches: " + matches)
-        let roundLength: number = getRoundLength(matches)
-        console.log("Number of rounds: " + roundLength)
         let roundMatches: Matches[] = []
         for (let j = 0; j < matches.length; j++) {
           const element = matches[j];
-          console.log("match round: " + element.round)
-          console.log("current round" + round)
-          console.log("tournament id: " + tournaments.id)
-          console.log("current tournament" + element.tournament)
           if (element.round == round && tournaments.id == element.tournament) {
-
-            const topTeam = {
-              "team": element.team1,
-              "position": 0
-            };
-            const bottomTeam = {
-              "team": element.team2,
-              "position": 0
-            };
-            matchUps.push({
-              "match": element,
-              "topTeam": topTeam,
-              "bottomTeam": bottomTeam
-            });
             roundMatches.push(element)
           }
         }
         let tournamentRound: RoundMatches = {
           "matches": roundMatches,
-          "displayMatches": matchUps,
+          // "displayMatches": matchUps,
           "round": round
         }
-        console.log("round matches: " + roundMatches.length)
-        setPlayTournamentHTML(<Round round={tournamentRound} key={tournamentRound.round} router={router}/>)
+        setPlayTournamentHTML(<Round round={{"matches": roundMatches, "round": round}} key={tournamentRound.round} router={router}/>)
       }
     }
 
