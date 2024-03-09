@@ -73,7 +73,7 @@ function TournamentPlayer() {
       }
       return roundLength
     }
-  
+
     const linkMatches = async () => {
       if (matches) {
         let roundLength: number = getRoundLength(matches)

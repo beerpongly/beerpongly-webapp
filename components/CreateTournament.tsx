@@ -137,7 +137,7 @@ function TournamentForm({ session }: TournamentFormProps) {
     const { data, error } = await supabase
     .from('tournaments')
     .insert([
-      { owner_user_id: user.id, round_robin: roundRobin, tournament_name: tournamentName, teams: teams},
+      { owner_user_id: user.id, round_robin: roundRobin, tournament_name: tournamentName, teams: teams, progress: 0 },
     ])
     .select()
 

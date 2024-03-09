@@ -74,6 +74,7 @@ export type Database = {
           id: number
           inserted_at: string
           owner_user_id: string
+          progress: number
           round_robin: boolean
           teams: string[]
           tournament_name: string
@@ -82,6 +83,7 @@ export type Database = {
           id?: number
           inserted_at?: string
           owner_user_id: string
+          progress?: number
           round_robin?: boolean
           teams?: string[]
           tournament_name?: string
@@ -90,6 +92,7 @@ export type Database = {
           id?: number
           inserted_at?: string
           owner_user_id?: string
+          progress?: number
           round_robin?: boolean
           teams?: string[]
           tournament_name?: string

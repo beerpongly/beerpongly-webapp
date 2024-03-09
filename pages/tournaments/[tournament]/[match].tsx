@@ -13,6 +13,39 @@ function TournamentPlayer() {
     const router = useRouter();
     console.log(router.asPath)
 
+    const updateProgress = async (tournament: Tournaments) => {
+      if (match && match.round == tournament.progress) {
+          console.log(match.team1 + " Wins!")
+          const { data: data, error } = await supabase
+          .from('matches')
+          .select('*')
+          .eq('tournament', tournament.id)
+          .eq('round', tournament.progress)
+        if (error) {
+          console.log('error', error)
+        }
+        if (data) {
+          let nextRound = true
+          for (let i = 0; i < data.length; i++) {
+            const match = data[i];
+            if (!match.winner) {
+              nextRound = false
+            }
+          }
+          if (nextRound) {
+            const { error } = await supabase
+              .from('tournaments')
+              .update({ progress: tournament.progress + 1 })
+              .eq('id', tournament.id)
+              .select()
+            if (error) {
+              console.log('error', error)
+            }
+          }
+        }
+      }
+    }
+
     const processWinner = async (winner: boolean) => {
       if (match) {
         if (winner) {
@@ -39,7 +72,7 @@ function TournamentPlayer() {
           }
         } else {
           console.log(match.team2 + " Wins!")
-          const { data, error } = await supabase
+          const {} = await supabase
             .from('matches')
             .update({ "winner": false })
             .eq('id', match.id)
@@ -61,16 +94,15 @@ function TournamentPlayer() {
           }
         }
         const { data: data, error } = await supabase
-          .from('matches')
+          .from('tournaments')
           .select('*')
-          .eq('tournament', Number(router.query.tournament))
+          .eq('id', Number(router.query.tournament))
         if (error) {
           console.log('error', error)
-        } else {
+        } 
+        if (data?.length == 1) {
           console.log(data)
-          // if (!match && data.length == 1) {
-          //   setMatch(data[0])
-          // }
+          updateProgress(data[0]);
         }
         router.push({
           pathname: '/tournaments/' + match.tournament,
