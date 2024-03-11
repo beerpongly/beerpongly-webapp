@@ -37,31 +37,39 @@ function TournamentPlayer() {
           }
           console.log("test")
           if (nextRound && data.length > 0) {
-            const nextProgress = tournament.progress + 1
-            const { error } = await supabase
-              .from('tournaments')
-              .update({ progress: tournament.progress + 1 })
-              .eq('id', tournament.id)
-              .select()
-            if (error) {
-              console.log('error', error)
-            }
-            console.log("test")
             const { data: nextRoundData, error: nextRoundError } = await supabase
               .from('matches')
               .select('*')
               .eq('tournament', tournament.id)
               .eq('round', tournament.progress + 1)
             if (nextRoundData && nextRoundData.length == 0) {
+              const { error } = await supabase
+                .from('tournaments')
+                .update({ progress: -1 })
+                .eq('id', tournament.id)
+                .select()
+              if (error) {
+                console.log('error', error)
+              }
               router.push({
                 pathname: '/tournaments/' + match.tournament + "/winner",
               })
             } else {
+              const { error } = await supabase
+                .from('tournaments')
+                .update({ progress: tournament.progress + 1 })
+                .eq('id', tournament.id)
+                .select()
+              if (error) {
+                console.log('error', error)
+              }
+              console.log("test")
               router.push({
                 pathname: '/tournaments/' + match.tournament,
                 query: {round: match.round + 1}
               })
             }
+            
           } else {
             router.push({
               pathname: '/tournaments/' + match.tournament,
@@ -69,6 +77,11 @@ function TournamentPlayer() {
             })
           }
         }
+      } else if (match && match.round < tournament.progress) {
+        router.push({
+          pathname: '/tournaments/' + match.tournament,
+          query: {round: match.round}
+        })
       }
     }
 

@@ -116,7 +116,7 @@ function TournamentViewer() {
                       <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
                           <th scope="col" className="px-4 py-4">Tournament Name</th>
-                          <th scope="col" className="px-4 py-3">Round</th>
+                          <th scope="col" className="px-4 py-3">Progress</th>
                           <th scope="col" className="px-4 py-3">Teams</th>
                           <th scope="col" className="px-4 py-3">
                             <span className="sr-only">Actions</span>
@@ -127,7 +127,7 @@ function TournamentViewer() {
                         {tournaments.map((tournament) => (
                           <tr className="border-b dark:border-gray-700">
                             <th scope="row" onClick={() => router.push('/tournaments/' + tournament.id)} className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{tournament.tournament_name}</th>
-                            <td className="px-4 py-3">{tournament.round_robin ? 'Yes' : 'No'}</td>
+                            <td className="px-4 py-3">{tournament.progress == -1 ? 'Finished' : 'In Progress'}</td>
                             <td className="px-4 py-3">
                               {tournament.teams?.map((team, index) => (
                                 <li key={index}>{team}</li>
