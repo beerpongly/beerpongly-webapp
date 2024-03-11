@@ -30,7 +30,8 @@ type Matches = Database['public']['Tables']['matches']['Row']
 const SortableList: React.FC = () => {
   const router = useRouter();
   const supabase = useSupabaseClient<Database>()
-  const [tournaments, setTournaments] = useState<Tournament>()
+  const [tournaments, setTournaments] = useState<Tournaments>()
+  const [errorMessage, setErrorMessage] = useState(<div></div>)
   const [list, setList] = useState<ListItem[]>([
     // { id: 1, text: 'Item 1' },
     // { id: 2, text: 'Item 2' },
@@ -75,20 +76,61 @@ const SortableList: React.FC = () => {
   };
 
   async function setOrder() {
-    console.log(list)
-    const teams: string[] = []
-    for (let i = 0; i < list.length; i++) {
-      const element = list[i];
-      teams.push(element.text);
+    if (tournaments) {
+      if (tournaments.progress == 0) {
+        console.log(list)
+        const teams: string[] = []
+        for (let i = 0; i < list.length; i++) {
+          const element = list[i];
+          teams.push(element.text);
+        }
+        if (tournaments) {
+          const { data, error } = await supabase
+            .from('tournaments')
+            .update({ teams: teams })
+            .eq('id', tournaments.id)
+            .select()
+
+          router.push('/tournaments/' + tournaments.id)
+        }
+      } else {
+        setErrorMessage(<div className='font-bold text-red-500'>Tournament in progress, Please reset tournament to edit the teams order!</div>);
+      }
     }
+  }
+
+  async function resetMatches() {
     if (tournaments) {
       const { data, error } = await supabase
+        .from('matches')
+        .update({ team1: undefined, team2: undefined, winner: undefined })
+        .eq('tournament', tournaments.id)
+        .select()
+      if (data) {
+        console.log("data: " + data)
+      }
+    }
+  }
+
+  async function resetTournament() {
+    if (tournaments) {
+      const {} = await supabase
         .from('tournaments')
-        .update({ teams: teams })
+        .update({ progress: 0 })
         .eq('id', tournaments.id)
         .select()
-
-      router.push('/tournaments/' + tournaments.id)
+      
+      const { data, error } = await supabase
+        .from('matches')
+        .update({ team1: '', team2: '', winner: null })
+        .eq('tournament', tournaments.id)
+        .select()
+        
+        if (data) {
+          console.log("Data: " + data[0].tournament)
+        }
+      
+      fetchTournaments()
     }
   }
 
@@ -162,7 +204,21 @@ const SortableList: React.FC = () => {
           {playTournamentHTML}
 
       </DndContext>
-      <button onClick={setOrder}>Save</button>
+      <button
+        onClick={setOrder}
+        className="focus:outline-none text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900"
+      >
+        Save
+      </button>
+      <button
+        onClick={resetTournament}
+        className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+      >
+        Restart Tournament
+      </button>
+      <div>
+        {errorMessage}
+      </div>
     </div>
   );
 };

@@ -143,10 +143,15 @@ function TournamentPlayer() {
               match.team2 = tournaments.teams[tournamentCount];
             }
             tournamentCount++;
-            const { data, error } = await supabase
+            const {} = await supabase
               .from('matches')
               .update({ team1: match.team1, team2: match.team2 })
               .eq('id', match.id)
+              .select()
+            const {} = await supabase
+              .from('tournaments')
+              .update({ progress: 1 })
+              .eq("id", tournaments.id)
               .select()
           }
           linkMatches()

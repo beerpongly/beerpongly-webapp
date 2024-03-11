@@ -14,8 +14,11 @@ function TournamentPlayer() {
     console.log(router.asPath)
 
     const updateProgress = async (tournament: Tournaments) => {
+      console.log(match)
+      console.log(tournament.progress)
       if (match && match.round == tournament.progress) {
           console.log(match.team1 + " Wins!")
+        console.log("test")
           const { data: data, error } = await supabase
           .from('matches')
           .select('*')
@@ -28,11 +31,13 @@ function TournamentPlayer() {
           let nextRound = true
           for (let i = 0; i < data.length; i++) {
             const match = data[i];
-            if (!match.winner) {
+            if (match.winner == null) {
               nextRound = false
             }
           }
-          if (nextRound) {
+          console.log("test")
+          if (nextRound && data.length > 0) {
+            const nextProgress = tournament.progress + 1
             const { error } = await supabase
               .from('tournaments')
               .update({ progress: tournament.progress + 1 })
@@ -41,6 +46,27 @@ function TournamentPlayer() {
             if (error) {
               console.log('error', error)
             }
+            console.log("test")
+            const { data: nextRoundData, error: nextRoundError } = await supabase
+              .from('matches')
+              .select('*')
+              .eq('tournament', tournament.id)
+              .eq('round', tournament.progress + 1)
+            if (nextRoundData && nextRoundData.length == 0) {
+              router.push({
+                pathname: '/tournaments/' + match.tournament + "/winner",
+              })
+            } else {
+              router.push({
+                pathname: '/tournaments/' + match.tournament,
+                query: {round: match.round + 1}
+              })
+            }
+          } else {
+            router.push({
+              pathname: '/tournaments/' + match.tournament,
+              query: {round: match.round}
+            })
           }
         }
       }
@@ -99,15 +125,18 @@ function TournamentPlayer() {
           .eq('id', Number(router.query.tournament))
         if (error) {
           console.log('error', error)
-        } 
+        }
         if (data?.length == 1) {
           console.log(data)
+          console.log("test")
           updateProgress(data[0]);
+        } else {
+          router.push({
+            pathname: '/tournaments/' + match.tournament,
+            query: {round: match.round}
+          })
         }
-        router.push({
-          pathname: '/tournaments/' + match.tournament,
-          query: {round: match.round}
-        })
+        
       }
     }
 

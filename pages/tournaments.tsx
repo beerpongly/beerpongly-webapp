@@ -66,6 +66,11 @@ function TournamentViewer() {
       fetchTournaments();
     };
 
+
+    const editTournament = async (tournament: Tournaments) => {
+      router.push("/tournaments/" + tournament.id + "/edit")
+    };
+
     return (
       <div>
         <NavBar></NavBar>
@@ -111,7 +116,7 @@ function TournamentViewer() {
                       <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
                           <th scope="col" className="px-4 py-4">Tournament Name</th>
-                          <th scope="col" className="px-4 py-3">Round Robin</th>
+                          <th scope="col" className="px-4 py-3">Round</th>
                           <th scope="col" className="px-4 py-3">Teams</th>
                           <th scope="col" className="px-4 py-3">
                             <span className="sr-only">Actions</span>
@@ -129,6 +134,13 @@ function TournamentViewer() {
                               ))}
                             </td>
                             <td className="px-4 py-3 flex items-center justify-end">
+                            <button
+                              type="button"
+                              className="focus:outline-none text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900"
+                              onClick={() => editTournament(tournament)}
+                            >
+                              edit
+                            </button>
                             <button
                               type="button"
                               className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"

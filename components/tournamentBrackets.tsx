@@ -43,7 +43,7 @@ export interface Tournament {
               <p className="inline-block align-middle">{0}</p>
             </div>
               <div className="box-border h-10 w-40 p-1 border-gray-400 bg-indigo-200 rounded-tr-lg">
-                <p className={`inline-block align-middle ${!match?.winner ? 'line-through' : ''}`}>{match.team1}</p>
+                <p className={`inline-block align-middle ${match?.winner == false ? 'line-through' : ''}`}>{match.team1}</p>
               </div>
             </div>
           {/* <BottomBracket team={bottomTeam} position={bottomTeam}/> */}
@@ -52,7 +52,7 @@ export interface Tournament {
               <p className="inline-block align-middle">{0}</p>
             </div>
             <div className="box-border h-10 w-40 p-1 border-indigo-300 border-t-2 bg-indigo-200 rounded-br-lg">
-              <p className={`inline-block align-middle ${match?.winner ? 'line-through' : ''}`}>{match.team2}</p>
+              <p className={`inline-block align-middle ${match?.winner == true ? 'line-through' : ''}`}>{match.team2}</p>
             </div>
           </div>
         </div>
