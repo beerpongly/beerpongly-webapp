@@ -12,9 +12,9 @@ function AddTournament() {
   if (session) {
 
     return (
-      <div>
+      <div className='w-full h-full bg-white dark:bg-gray-900 text-center'>
         <NavBar></NavBar>
-        <div>
+        <div className='w-full h-full bg-white dark:bg-gray-900 text-center'>
           <TournamentForm session={session} />
         </div>
       </div>

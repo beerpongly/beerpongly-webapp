@@ -180,7 +180,7 @@ function TournamentForm({ session }: TournamentFormProps) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white">
+    <div className="min-h-screen flex items-center justify-center">
       <form onSubmit={handleSubmit} className="bg-white p-8 rounded shadow-md max-w-md w-full">
         <h2 className="text-2xl font-semibold mb-6">Tournament Form</h2>
 

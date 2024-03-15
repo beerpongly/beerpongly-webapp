@@ -4,7 +4,7 @@ export default function Updates() {
   return (
     <>
         <NavBar></NavBar>
-        <div className="min-w-full min-h-screen flex items-center justify-center">
+        <div className="w-full h-full bg-white dark:bg-gray-900 dark:text-white text-center min-w-full min-h-screen flex items-center justify-center">
             Development of page in progress!
         </div>
     </>

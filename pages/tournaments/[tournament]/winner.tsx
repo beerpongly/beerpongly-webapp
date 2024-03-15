@@ -102,12 +102,12 @@ function TournamentPlayer() {
     }, [router.isReady]);
 
     return (
-    <div>
+    <>
       <NavBar></NavBar>
-      <div>
-        <p>Winner: {finalMatch}</p>
+      <div className="w-full h-full bg-white dark:bg-gray-900 text-center">
+        <h1 className='dark:text-white'>Winner: {finalMatch}</h1>
       </div>
-    </div>)
+    </>)
     }
 
 export default TournamentPlayer;

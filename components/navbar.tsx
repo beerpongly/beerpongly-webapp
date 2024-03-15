@@ -5,6 +5,7 @@ import { TournamentFormProps } from '../types/form-types'; // Adjust the path ba
 export default function NavBar() {
   const session = useSession()
   const supabase = useSupabaseClient()
+  
 
   return (
     <>
@@ -18,30 +19,30 @@ export default function NavBar() {
         <div className="flex lg:flex-1">
           <a href="/" className="-m-1.5 p-1.5">
             <span className="sr-only">Beerpongly</span>
-            <h3><b>Beerpongly</b></h3>
+            <h3><b className='text-black'>Beerpongly</b></h3>
             {/* <img className="h-8 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" alt=""> */}
           </a>
         </div>
-        <div className="hidden lg:flex lg:gap-x-12">
+        <div className="lg:flex lg:gap-x-12">
           <a href="/tournaments" className="text-sm font-semibold leading-6 text-gray-900">Tournaments</a>
-          <a href="/shop" className="text-sm font-semibold leading-6 text-gray-900">Shop</a>
+          {/* <a href="/shop" className="text-sm font-semibold leading-6 text-gray-900">Shop</a>
           <a href="/prices" className="text-sm font-semibold leading-6 text-gray-900">Prices</a>
-          <a href="/updates" className="text-sm font-semibold leading-6 text-gray-900">Updates</a>
+          <a href="/updates" className="text-sm font-semibold leading-6 text-gray-900">Updates</a> */}
         </div>
-        <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-        {!session ? (
-          <a href="/signin" className="text-sm font-semibold leading-6 text-gray-900">Log in <span aria-hidden="true">&rarr;</span></a>
-        ) : (
-            <button
-              className="text-sm font-semibold leading-6 text-gray-900"
-              onClick={async () => {
-                const { error } = await supabase.auth.signOut()
-                if (error) console.log('Error logging out:', error.message)
-              }}
-            >
-              Logout <span aria-hidden="true">&rarr;</span>
-            </button>
-        )}
+        <div className="lg:flex lg:flex-1 lg:justify-end">
+          {!session ? (
+            <a href="/signin" className="text-sm font-semibold leading-6 text-gray-900">Log in <span aria-hidden="true">&rarr;</span></a>
+          ) : (
+              <button
+                className="text-sm font-semibold leading-6 text-gray-900"
+                onClick={async () => {
+                  const { error } = await supabase.auth.signOut()
+                  if (error) console.log('Error logging out:', error.message)
+                }}
+              >
+                Logout <span aria-hidden="true">&rarr;</span>
+              </button>
+          )}
         </div>
       </nav>
     </>

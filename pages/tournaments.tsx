@@ -72,7 +72,7 @@ function TournamentViewer() {
     };
 
     return (
-      <div>
+      <>
         <NavBar></NavBar>
           {/* // <div>
           //     <h2 className="text-2xl font-semibold mb-4">Tournament Viewer</h2>
@@ -94,9 +94,9 @@ function TournamentViewer() {
           //         <button onClick={addNewTournament}>Add New Tournament</button>
           //     </div>
           // </div> */}
-          <div>
+          <div className='w-full h-full bg-white dark:bg-gray-900 text-center'>
             {/* <!-- Start block --> */}
-            <section className="bg-gray-50 dark:bg-gray-900 p-3 sm:p-5 antialiased">
+            <section className="p-3 sm:p-5 antialiased">
               <div className="mx-auto max-w-screen-xl px-4 lg:px-12">
                 {/* <!-- Start coding here --> */}
                 <div className="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
@@ -196,7 +196,7 @@ function TournamentViewer() {
             {/* <!-- End block --> */}
 
           </div>
-            </div>
+        </>
         );
     }
         else {

@@ -195,7 +195,7 @@ const SortableList: React.FC = () => {
   }, [list]);
 
   return (
-    <div>
+    <div className='w-full h-full bg-white dark:bg-gray-900 dark:text-white text-center'>
       <DndContext 
         sensors={sensors}
         collisionDetection={closestCenter}
@@ -236,7 +236,7 @@ const SortableItem: React.FC<{ id: number; text: string }> = ({ id, text }) => {
   };
 
   return (
-    <li ref={setNodeRef} style={style}>
+    <li ref={setNodeRef} style={style} className='text-black'>
       {text}
       <button className='float-right' ref={setActivatorNodeRef} {...listeners}>Drag handle</button>
     </li>
