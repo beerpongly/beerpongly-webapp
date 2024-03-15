@@ -124,8 +124,8 @@ function TournamentViewer() {
                         </tr>
                       </thead>
                       <tbody>
-                        {tournaments.map((tournament) => (
-                          <tr className="border-b dark:border-gray-700">
+                        {tournaments.map(tournament => (
+                          <tr key={tournament.id} className="border-b dark:border-gray-700">
                             <th scope="row" onClick={() => router.push('/tournaments/' + tournament.id)} className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{tournament.tournament_name}</th>
                             <td className="px-4 py-3">{tournament.progress == -1 ? 'Finished' : 'In Progress'}</td>
                             <td className="px-4 py-3">
