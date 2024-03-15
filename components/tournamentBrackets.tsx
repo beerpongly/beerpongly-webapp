@@ -30,28 +30,30 @@ export interface Tournament {
   export interface Games {
     round: RoundMatches
     router: NextRouter;
+    tournament: Tournaments
   }
   
   export function Match({ match }: Matchup) {
     console.log("match match: " + match)
     return (
-      <main className="p-20">
-        <div className="">
+      <main className="">
+        <div className="text-center border-t-2 rounded-lg text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
           {/* <TopBracket team={topTeam} position={topTeam}/> */}
           <div className="flex justify-start">
-            <div className="box-border h-10 w-10 p-1 border-gray-400 bg-indigo-300 rounded-tl-lg text-center">
+            <div className="box-border h-10 w-10 p-1 border-r-2 rounded-tl-lg">
               <p className="inline-block align-middle">{0}</p>
             </div>
-              <div className="box-border h-10 w-40 p-1 border-gray-400 bg-indigo-200 rounded-tr-lg">
-                <p className={`inline-block align-middle ${match?.winner == false ? 'line-through' : ''}`}>{match.team1}</p>
-              </div>
+{/* // text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white */}
+            <div className="box-border h-10 w-40 p-1 rounded-tr-lg">
+              <p className={`inline-block align-middle ${match?.winner == false ? 'line-through' : ''}`}>{match.team1}</p>
             </div>
+          </div>
           {/* <BottomBracket team={bottomTeam} position={bottomTeam}/> */}
           <div className="flex justify-start box-border border-gray-400 max-w-50">
-            <div className="box-border h-10 w-10 p-1 border-indigo-300 border-t-2 bg-indigo-300 rounded-bl-lg text-center">
+            <div className="box-border h-10 w-10 p-1 border-t-2 border-r-2 rounded-bl-lg">
               <p className="inline-block align-middle">{0}</p>
             </div>
-            <div className="box-border h-10 w-40 p-1 border-indigo-300 border-t-2 bg-indigo-200 rounded-br-lg">
+            <div className="box-border h-10 w-40 p-1 border-t-2 rounded-br-lg">
               <p className={`inline-block align-middle ${match?.winner == true ? 'line-through' : ''}`}>{match.team2}</p>
             </div>
           </div>
@@ -60,27 +62,30 @@ export interface Tournament {
     )
   }
 
-  function onPlay(tournamentId: number, matchId: number, router: NextRouter) {
-    console.log("/tournaments/" + String(tournamentId) + "/" + String(matchId))
-    router.push("/tournaments/" + String(tournamentId) + "/" + String(matchId))
+  function onPlay(tournament: Tournaments, match: Matches, router: NextRouter) {
+    console.log("/tournaments/" + String(tournament.id) + "/" + String(match.id))
+    if (tournament.progress >= match.round) {
+      router.push("/tournaments/" + String(tournament.id) + "/" + String(match.id))
+    } else {
+      console.log("Cannot play future rounds!")
+    }
   }
   
- export function Round({round, router}: Games) {
+ export function Round({round, router, tournament}: Games) {
     let matches = []
     for (let index = 0; index < round.matches.length; index++) {
       console.log("round: " + index)
       const match = round.matches[index];
-      const tournamentId = round.matches[index].tournament
       const matchId = round.matches[index].id
       matches.push(
-      <div onClick={() => onPlay(tournamentId, matchId, router)}>
+      <div onClick={() => onPlay(tournament, round.matches[index], router)}>
         <Match key={index} match={match}/>
       </div>
       );
     }
   
     return (
-      <div>
+      <div className='grid grid-cols-1 gap-4'>
         {matches}
       </div>
     )

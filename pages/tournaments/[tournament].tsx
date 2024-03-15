@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router'
 import { Database } from '@/types/supabase'
 import { useSession, useSupabaseClient } from '@supabase/auth-helpers-react'
-import { useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { TournamentFormProps } from '../../types/form-types'; // Adjust the path based on your project structure
 import { Matchup, Round, RoundMatches, Tournament } from '@/components/tournamentBrackets';
 import NavBar from '@/components/navbar';
@@ -22,7 +22,7 @@ function TournamentPlayer() {
     const [tournaments, setTournaments] = useState<Tournaments>()
     const [matches, setMatches] = useState<Matches[]>()
     const [playTournamentHTML, setPlayTournamentHTML] = useState(<div></div>)
-    const [addTournament, setAddTournament] = useState<boolean>(false);
+    const [roundCount, setRoundCount] = useState<number>(0);
     const router = useRouter();
     const [currentRound, setCurrentRound] = useState(1)
 
@@ -174,7 +174,11 @@ function TournamentPlayer() {
           // "displayMatches": matchUps,
           "round": round
         }
-        setPlayTournamentHTML(<Round round={{"matches": roundMatches, "round": round}} key={tournamentRound.round} router={router}/>)
+        setPlayTournamentHTML(
+          <div>
+            <Round round={{"matches": roundMatches, "round": round}} key={tournamentRound.round} router={router} tournament={tournaments}/>
+          </div>
+        )
       }
     }
 
@@ -190,6 +194,7 @@ function TournamentPlayer() {
               else {
                 if (!tournaments) {
                   setTournaments(data[0]);
+                  setRoundCount(getRoundCount(data[0].teams.length))
                 }
                 // setTournaments(data[0]);
                 fetchMatches()
@@ -243,7 +248,7 @@ function TournamentPlayer() {
       if (tournaments) {
         numOfTeams = tournaments.teams.length
       }
-      let roundCount = getRoundCount(numOfTeams)
+      // let roundCount = getRoundCount(numOfTeams)
       if (currentRound < roundCount) {
         setCurrentRound(currentRound + 1)
       }
@@ -267,19 +272,48 @@ function TournamentPlayer() {
       }
     }
 
+    function pageinator() {
+      let page_list: ReactElement[]  = []
+      for (let i = 0; i < roundCount; i++) {
+        page_list.push(
+          <li>
+            <p onClick={() => setCurrentRound(i+1)} className={i+1 == currentRound ? "flex items-center justify-center px-3 h-8 text-blue-600 border border-gray-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white" : "flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"}>{i+1}</p>
+          </li>
+        )
+      }
+      return (
+        <nav aria-label="Page navigation example">
+          <ul className="inline-flex -space-x-px text-sm">
+            <li>
+              <p onClick={previousRound} className="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Previous</p>
+            </li>
+            {page_list}
+            <li>
+              <p onClick={nextRound} className="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Next</p>
+            </li>
+          </ul>
+        </nav>
+      )
+    }
+
     return (
-    <div>
+    <div className='justify-center h-screen bg-gray-50 dark:bg-gray-900'>
       <NavBar></NavBar>
-      <div>
-        {playTournamentHTML}
+      <div className='flex justify-center grid grid-cols-1 gap-4 items-center'>
+        <div className='flex justify-center'>
+          {pageinator()}
+        </div>
+        
+        <div className='flex justify-center'>
+          <button onClick={editTournament} className='text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800'>Edit</button>
+          <button onClick={goToWinnersPage} className='focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800'>Winners Page</button>
+        </div>
+        <div className='flex justify-center'>
+          <div>
+            {playTournamentHTML}
+          </div>
+        </div>
       </div>
-      <div>
-        <button onClick={previousRound}>Previous</button>
-        <button onClick={nextRound}>Next</button>
-        <p>Round: {currentRound}</p>
-      </div>
-      <button onClick={editTournament}>Edit</button>
-      <button onClick={goToWinnersPage}>Winners Page</button>
     </div>)
     }
 
