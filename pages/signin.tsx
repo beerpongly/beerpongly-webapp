@@ -2,7 +2,6 @@ import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { useSession, useSupabaseClient } from '@supabase/auth-helpers-react'
 import { Auth, ThemeSupa } from '@supabase/auth-ui-react'
-import TournamentList from '@/components/TournamentList'
 import { TournamentFormProps } from '../types/form-types'; // Adjust the path based on your project structure
 import TournamentForm from '@/components/CreateTournament';
 import NavBar from '@/components/navbar';
@@ -12,10 +11,10 @@ export default function SignIn() {
   const supabase = useSupabaseClient()
   const router = useRouter();
 
-  const handleFormSubmit: TournamentFormProps['onSubmit'] = (formData) => {
-    // Handle the form data (e.g., send it to an API, save it to state, etc.)
-    console.log(formData);
-  };
+  // const handleFormSubmit: TournamentFormProps['onSubmit'] = (formData) => {
+  //   // Handle the form data (e.g., send it to an API, save it to state, etc.)
+  //   console.log(formData);
+  // };
 
   if (session) {
     router.push("/")

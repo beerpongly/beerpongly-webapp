@@ -1,11 +1,12 @@
 import Head from 'next/head'
+import Link from 'next/link';
 import { useSession, useSupabaseClient } from '@supabase/auth-helpers-react'
 import { TournamentFormProps } from '../types/form-types'; // Adjust the path based on your project structure
 
 export default function NavBar() {
   const session = useSession()
   const supabase = useSupabaseClient()
-  
+
 
   return (
     <>
@@ -17,21 +18,21 @@ export default function NavBar() {
       </Head>
       <nav className="mx-auto flex items-center justify-between p-6 lg:px-8 bg-white w-screen" aria-label="Global">
         <div className="flex lg:flex-1">
-          <a href="/" className="-m-1.5 p-1.5">
+          <Link href="/" className="-m-1.5 p-1.5">
             <span className="sr-only">Beerpongly</span>
             <h3><b className='text-black'>Beerpongly</b></h3>
             {/* <img className="h-8 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" alt=""> */}
-          </a>
+          </Link>
         </div>
         <div className="lg:flex lg:gap-x-12">
-          <a href="/tournaments" className="text-sm font-semibold leading-6 text-gray-900">Tournaments</a>
-          {/* <a href="/shop" className="text-sm font-semibold leading-6 text-gray-900">Shop</a>
-          <a href="/prices" className="text-sm font-semibold leading-6 text-gray-900">Prices</a>
-          <a href="/updates" className="text-sm font-semibold leading-6 text-gray-900">Updates</a> */}
+          <Link href="/tournaments" className="text-sm font-semibold leading-6 text-gray-900">Tournaments</Link>
+          {/* <Link href="/shop" className="text-sm font-semibold leading-6 text-gray-900">Shop</Link> 
+          <Link href="/prices" className="text-sm font-semibold leading-6 text-gray-900">Prices</Link> 
+          <Link href="/updates" className="text-sm font-semibold leading-6 text-gray-900">Updates</Link>  */}
         </div>
         <div className="lg:flex lg:flex-1 lg:justify-end">
           {!session ? (
-            <a href="/signin" className="text-sm font-semibold leading-6 text-gray-900">Log in <span aria-hidden="true">&rarr;</span></a>
+            <Link href="/signin" className="text-sm font-semibold leading-6 text-gray-900">Log in <span aria-hidden="true">&rarr;</span></Link>
           ) : (
               <button
                 className="text-sm font-semibold leading-6 text-gray-900"
