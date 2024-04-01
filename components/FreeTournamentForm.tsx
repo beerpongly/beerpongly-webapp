@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 function TournamentForm() {
+  const router = useRouter();
   const [teams, setTeams] = useState(['']);
   const [errorMessage, setErrorMessage] = useState(<div></div>)
 
@@ -88,6 +89,8 @@ function TournamentForm() {
     }
 
     AddTournament()
+
+    router.push("/freeEdit")
   };
 
   return (
