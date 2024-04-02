@@ -53,14 +53,12 @@ function TournamentForm() {
     }
 
     let rounds: string[][] = []
-    let count = 1;
-    for (let i = roundCount; i > 0; i--) {
+    for (let i = roundCount; i >= 0; i--) {
       let teams: string[] = []
       for (let j = 0; j < Math.pow(2, i); j++) {
         teams.push("")
       }
       rounds.push(teams)
-      count++;
     }
 
     localStorage.setItem("rounds", JSON.stringify(rounds))
