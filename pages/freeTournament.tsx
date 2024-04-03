@@ -3,7 +3,7 @@ import { Database } from '@/types/supabase'
 import { useSession, useSupabaseClient } from '@supabase/auth-helpers-react'
 import { ReactElement, useEffect, useState } from 'react'
 import { TournamentFormProps } from '../types/form-types'; // Adjust the path based on your project structure
-import { Matchup, Round, RoundMatches, Tournament } from '@/components/tournamentBrackets';
+// import { Matchup, Round, RoundMatches, Tournament } from '@/components/tournamentBrackets';
 import NavBar from '@/components/navbar';
 
 type Tournaments = Database['public']['Tables']['tournaments']['Row']
@@ -23,6 +23,12 @@ function TournamentPlayer() {
       [0, 7, 4, 3, 2, 5, 6, 1],
       [0, 15, 8, 7, 4, 11, 12, 3, 2, 13, 10, 5, 6, 9, 14, 1],
     ]
+
+    interface Match {
+      team1: string
+      team2: string
+      index: number
+    }
 
     function getRoundCount(numberOfTeams: number) {
       let roundCount = 0;
@@ -45,91 +51,65 @@ function TournamentPlayer() {
       return roundLength
     }
 
-    // const linkMatches = async () => {
-    //   if (matches) {
-    //     let roundLength: number = getRoundLength(matches)
-    //     for (let i = 1; i <= roundLength; i++) {
-    //       for (let j = 0; j < matches.length; j++) {
-    //         const tournamentMatch = matches[j]
-    //         if (tournamentMatch.round == i) {
-    //           // add previous rounds
-    //           if (tournamentMatch.round > 1) {
-    //             for (let k = 0; k < matches.length; k++) {
-    //               const previousMatch = matches[k];
-    //               if (previousMatch.round == i - 1 && previousMatch.match == (tournamentMatch.match * 2)) {
-    //                 tournamentMatch.previous_match_2 = previousMatch.id;
-    //               }
-    //               if (previousMatch.round == i - 1 && previousMatch.match == ((tournamentMatch.match * 2) - 1)) {
-    //                 tournamentMatch.previous_match_1 = previousMatch.id;
-    //               }
-    //             }
-    //           }
-    //           // add next round
-    //           if (tournamentMatch.round < roundLength) {
-    //             for (let k = 0; k < matches.length; k++) {
-    //               const nextMatch = matches[k];
-    //               if (nextMatch.round == i + 1 && nextMatch.match == Math.ceil(tournamentMatch.match/2)) {
-    //                 tournamentMatch.next_match = nextMatch.id;
-    //               }
-    //             }
-    //           }
-              
-    //           const { data, error } = await supabase
-    //             .from('matches')
-    //             .update(tournamentMatch)
-    //             .eq('id', tournamentMatch.id)
-    //             .select()
-    //         }
-    //       }
-    //     }
-    //     fetchMatches()
-    //   }
-    // };
+    function Match({team1, team2, index}: Match) {
+      return (
+        <main className="">
+          <div className="text-center border-t-2 rounded-lg text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+            {/* <TopBracket team={topTeam} position={topTeam}/> */}
+            <div className="flex justify-start">
+              <div className="box-border h-10 w-10 p-1 border-r-2 rounded-tl-lg">
+                <p className="inline-block align-middle">{0}</p>
+              </div>
+  {/* // text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white */}
+              <div className="box-border h-10 w-40 p-1 rounded-tr-lg">
+                {/* <p className={`inline-block align-middle ${true == false ? 'line-through' : ''}`}>{team1}</p> */}
+                <p className={`inline-block align-middle`}>{team1}</p>
+              </div>
+            </div>
+            {/* <BottomBracket team={bottomTeam} position={bottomTeam}/> */}
+            <div className="flex justify-start box-border border-gray-400 max-w-50">
+              <div className="box-border h-10 w-10 p-1 border-t-2 border-r-2 rounded-bl-lg">
+                <p className="inline-block align-middle">{0}</p>
+              </div>
+              <div className="box-border h-10 w-40 p-1 border-t-2 rounded-br-lg">
+                {/* <p className={`inline-block align-middle ${false == true ? 'line-through' : ''}`}>{team2}</p> */}
+                <p className={`inline-block align-middle`}>{team2}</p>
+              </div>
+            </div>
+          </div>
+        </main>
+      )
+    }
+  
+    function onPlay(match: number) {
+      router.push("/freeTournaments/" + String(currentRound) + "/" + String(match))
+      // if (tournament.progress >= match.round) {
+      //   router.push("/freeTournaments/" + String(match))
+      // } else {
+      //   console.log("Cannot play future rounds!")
+      // }
+    }
+    
+    function Round() {
+      const teams: string[] = JSON.parse(localStorage.getItem("teams") || "[]")
+      const rounds: string[][] = JSON.parse(localStorage.getItem("rounds") || "[]")
+      let matches = []
+      for (let index = 0; (index * 2) < rounds[currentRound-1].length; index++) {
+        console.log("round: " + index)
+        matches.push(
+          <div onClick={() => onPlay(index)}>
+            <Match key={index} team1={rounds[currentRound-1][index]} team2={rounds[currentRound-1][index+1]} index={index}/>
+          </div>
+        );
+      }
+      console.log(matches.length)
+      return (
+        <div className='grid grid-cols-1 gap-4'>
+          {matches}
+        </div>
+      )
+    }
 
-    // async function setFirstRound() {
-    //   let matchesSet: boolean = false
-    //   if (matches && tournaments) {
-    //     let roundLength: number = getRoundLength(matches)
-    //     let roundOneMatches: number[] = []
-    //     for (let i = 0; i < matches.length; i++) {
-    //       const match = matches[i];
-    //       if (match.round == 1) {
-    //         // console.log("Team 1: " + ((match.team1 != null && match.team1 != "")) + " Team 2: " + match.team2)
-    //         if ((match.team1 != null && match.team1 != "") || (match.team2 != null &&match.team2 != "")) {
-    //           matchesSet = true
-    //         } else {
-    //           roundOneMatches.push(i)
-    //         }
-    //       }
-    //     }
-    //     if (!matchesSet) {
-    //       let tournamentCount = 0 
-    //       for (let i = 0; i < roundOneMatches.length; i++) {
-    //         const match = matches[roundOneMatches[i]];
-    //         if (tournamentCount < tournaments.teams.length) {
-    //           match.team1 = tournaments.teams[tournamentCount];
-    //         }
-    //         tournamentCount++;
-    //         if (tournamentCount < tournaments.teams.length) {
-    //           match.team2 = tournaments.teams[tournamentCount];
-    //         }
-    //         tournamentCount++;
-    //         const {} = await supabase
-    //           .from('matches')
-    //           .update({ team1: match.team1, team2: match.team2 })
-    //           .eq('id', match.id)
-    //           .select()
-    //         const {} = await supabase
-    //           .from('tournaments')
-    //           .update({ progress: 1 })
-    //           .eq("id", tournaments.id)
-    //           .select()
-    //       }
-    //       linkMatches()
-    //     }
-    //     // update play html
-    //   }
-    // }
     async function setFirstRound() {
       const teams: string[] = JSON.parse(localStorage.getItem("teams") || "[]")
       const rounds: string[][] = JSON.parse(localStorage.getItem("rounds") || "[]")
@@ -149,27 +129,13 @@ function TournamentPlayer() {
       localStorage.setItem("rounds", JSON.stringify(rounds))
     }
 
-    // function updateTournament(round: number) {
-    //   if (matches && tournaments) {
-    //     let roundMatches: Matches[] = []
-    //     for (let j = 0; j < matches.length; j++) {
-    //       const element = matches[j];
-    //       if (element.round == round && tournaments.id == element.tournament) {
-    //         roundMatches.push(element)
-    //       }
-    //     }
-    //     let tournamentRound: RoundMatches = {
-    //       "matches": roundMatches,
-    //       // "displayMatches": matchUps,
-    //       "round": round
-    //     }
-    //     setPlayTournamentHTML(
-    //       <div>
-    //         <Round round={{"matches": roundMatches, "round": round}} key={tournamentRound.round} router={router} tournament={tournaments}/>
-    //       </div>
-    //     )
-    //   }
-    // }
+    function updateTournament() {
+        setPlayTournamentHTML(
+          <div>
+            <Round/>
+          </div>
+        )
+    }
 
     const fetchTournaments = async () => {
       const teams: string[] = JSON.parse(localStorage.getItem("teams") || "[]")
@@ -216,11 +182,11 @@ function TournamentPlayer() {
     //     }
     // };
 
-    // useEffect(() => {
-    //   if (router.isReady) {
-    //     updateTournament(currentRound);
-    //   }
-    // }, [rounds, currentRound]);
+    useEffect(() => {
+      if (router.isReady) {
+        updateTournament();
+      }
+    }, [currentRound]);
 
     useEffect(() => {
       if (router.isReady) {
@@ -235,11 +201,8 @@ function TournamentPlayer() {
     }, [roundCount]);
 
     function nextRound() {
-      let numOfTeams: number = 1;
-      if (tournaments) {
-        numOfTeams = tournaments.teams.length
-      }
-      // let roundCount = getRoundCount(numOfTeams)
+      const teams: string[] = JSON.parse(localStorage.getItem("teams") || "[]")
+      let roundCount = getRoundCount(teams.length)
       if (currentRound < roundCount) {
         setCurrentRound(currentRound + 1)
       }
@@ -252,15 +215,11 @@ function TournamentPlayer() {
     }
 
     function editTournament() {
-      if (tournaments) {
-        router.push("/tournaments/" + tournaments.id + "/edit")
-      }
+      router.push("/freeEdit")
     }
 
     function goToWinnersPage() {
-      if (tournaments) {
-        router.push("/tournaments/" + tournaments.id + "/winner")
-      }
+      router.push("/freeWinner")
     }
 
     function pageinator() {
