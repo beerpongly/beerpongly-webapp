@@ -16,147 +16,34 @@ function TournamentPlayer() {
     const router = useRouter();
     const [teams, setTeams] = useState<string[]>([])
     const [rounds, setRounds] = useState<string[][]>([])
-    // const rounds: string[][] = JSON.parse(localStorage.getItem("rounds") || "[]")
-    console.log(router.asPath)
-
-    const updateProgress = async (tournament: Tournaments) => {
-      console.log(match)
-      console.log(tournament.progress)
-      if (match && match.round == tournament.progress) {
-          console.log(match.team1 + " Wins!")
-        console.log("test")
-          const { data: data, error } = await supabase
-          .from('matches')
-          .select('*')
-          .eq('tournament', tournament.id)
-          .eq('round', tournament.progress)
-        if (error) {
-          console.log('error', error)
-        }
-        if (data) {
-          let nextRound = true
-          for (let i = 0; i < data.length; i++) {
-            const match = data[i];
-            if (match.winner == null) {
-              nextRound = false
-            }
-          }
-          console.log("test")
-          if (nextRound && data.length > 0) {
-            const { data: nextRoundData, error: nextRoundError } = await supabase
-              .from('matches')
-              .select('*')
-              .eq('tournament', tournament.id)
-              .eq('round', tournament.progress + 1)
-            if (nextRoundData && nextRoundData.length == 0) {
-              const { error } = await supabase
-                .from('tournaments')
-                .update({ progress: -1 })
-                .eq('id', tournament.id)
-                .select()
-              if (error) {
-                console.log('error', error)
-              }
-              router.push({
-                pathname: '/tournaments/' + match.tournament + "/winner",
-              })
-            } else {
-              const { error } = await supabase
-                .from('tournaments')
-                .update({ progress: tournament.progress + 1 })
-                .eq('id', tournament.id)
-                .select()
-              if (error) {
-                console.log('error', error)
-              }
-              console.log("test")
-              router.push({
-                pathname: '/tournaments/' + match.tournament,
-                query: {round: match.round + 1}
-              })
-            }
-            
-          } else {
-            router.push({
-              pathname: '/tournaments/' + match.tournament,
-              query: {round: match.round}
-            })
-          }
-        }
-      } else if (match && match.round < tournament.progress) {
-        router.push({
-          pathname: '/tournaments/' + match.tournament,
-          query: {round: match.round}
-        })
-      }
-    }
+    const [winners, setWinners] = useState<string[][]>([])
 
     const processWinner = async (winner: boolean) => {
-      if (match) {
-        if (winner) {
-          console.log(match.team1 + " Wins!")
-          const {} = await supabase
-            .from('matches')
-            .update({ "winner": true })
-            .eq('id', match.id)
-            .select()
-          if (match.next_match) {
-            if (match.match % 2 == 1) {
-              const {} = await supabase
-                .from('matches')
-                .update({ "team1": match.team1 })
-                .eq('id', match.next_match)
-                .select()
-            } else {
-              const {} = await supabase
-                .from('matches')
-                .update({ "team2": match.team1 })
-                .eq('id', match.next_match)
-                .select()
-            }
-          }
-        } else {
-          console.log(match.team2 + " Wins!")
-          const {} = await supabase
-            .from('matches')
-            .update({ "winner": false })
-            .eq('id', match.id)
-            .select()
-          if (match.next_match) {
-            if (match.match % 2 == 1) {
-              const {} = await supabase
-                .from('matches')
-                .update({ "team1": match.team2 })
-                .eq('id', match.next_match)
-                .select()
-            } else {
-              const {} = await supabase
-                .from('matches')
-                .update({ "team2": match.team2 })
-                .eq('id', match.next_match)
-                .select()
-            }
-          }
+      const round = router.query.freeRound
+      const match = router.query.freeMatch
+      console.log(winner)
+      console.log(round)
+      console.log(match)
+      if (winner) {
+        if (typeof match == "string" && typeof round == "string") {
+          rounds[Number(round)][Number(match)] = team1
+          winners[Number(round)-1][Number(match)*2] = "winner"
+          winners[Number(round)-1][Number(match)*2+1] = "loser"
         }
-        const { data: data, error } = await supabase
-          .from('tournaments')
-          .select('*')
-          .eq('id', Number(router.query.tournament))
-        if (error) {
-          console.log('error', error)
+      } else {
+        if (typeof match == "string" && typeof round == "string") {
+          rounds[Number(round)][Number(match)] = team2
+          winners[Number(round)-1][Number(match)*2] = "loser"
+          winners[Number(round)-1][Number(match)*2+1] = "winner"
         }
-        if (data?.length == 1) {
-          console.log(data)
-          console.log("test")
-          updateProgress(data[0]);
-        } else {
-          router.push({
-            pathname: '/tournaments/' + match.tournament,
-            query: {round: match.round}
-          })
-        }
-        
       }
+      localStorage.setItem("rounds", JSON.stringify(rounds))
+      localStorage.setItem("winners", JSON.stringify(winners))
+      console.log(rounds)
+      router.push({
+        pathname: '/freeTournament',
+        query: {round: Number(round) + 1}
+      })
     }
 
     const fetchMatch = async () => {
@@ -168,11 +55,11 @@ function TournamentPlayer() {
               setCurrentRound(round)
               setCurrentMatch(match)
               
-              console.log("Team1: " + rounds[Number(round)-1][Number(match)])
-              console.log("Team2: " + rounds[Number(round)-1][Number(match)+1])
+              console.log("Team1: " + rounds[Number(round)-1][Number(match)*2])
+              console.log("Team2: " + rounds[Number(round)-1][Number(match)*2+1])
               console.log("test")
-              setTeam1(rounds[Number(round)-1][Number(match)])
-              setTeam2(rounds[Number(round)-1][Number(match)+1])
+              setTeam1(rounds[Number(round)-1][Number(match)*2])
+              setTeam2(rounds[Number(round)-1][Number(match)*2+1])
                 // if (!match && data.length == 1) {
                 //   setMatch(data[0])
                 // }
@@ -189,6 +76,7 @@ function TournamentPlayer() {
         console.log(router.query.freeMatch);
         setTeams(JSON.parse(localStorage.getItem("teams") || "[]"))
         setRounds(JSON.parse(localStorage.getItem("rounds") || "[]"))
+        setWinners(JSON.parse(localStorage.getItem("winners") || "[]"))
       }
     }, [router.isReady]);
 

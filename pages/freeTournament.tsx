@@ -27,7 +27,7 @@ function TournamentPlayer() {
     interface Match {
       team1: string
       team2: string
-      index: number
+      winner: undefined | boolean
     }
 
     function getRoundCount(numberOfTeams: number) {
@@ -51,7 +51,7 @@ function TournamentPlayer() {
       return roundLength
     }
 
-    function Match({team1, team2, index}: Match) {
+    function Match({team1, team2, winner}: Match) {
       return (
         <main className="">
           <div className="text-center border-t-2 rounded-lg text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
@@ -62,8 +62,7 @@ function TournamentPlayer() {
               </div>
   {/* // text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white */}
               <div className="box-border h-10 w-40 p-1 rounded-tr-lg">
-                {/* <p className={`inline-block align-middle ${true == false ? 'line-through' : ''}`}>{team1}</p> */}
-                <p className={`inline-block align-middle`}>{team1}</p>
+                <p className={`inline-block align-middle ${winner == false ? 'line-through' : ''}`}>{team1}</p>
               </div>
             </div>
             {/* <BottomBracket team={bottomTeam} position={bottomTeam}/> */}
@@ -72,8 +71,7 @@ function TournamentPlayer() {
                 <p className="inline-block align-middle">{0}</p>
               </div>
               <div className="box-border h-10 w-40 p-1 border-t-2 rounded-br-lg">
-                {/* <p className={`inline-block align-middle ${false == true ? 'line-through' : ''}`}>{team2}</p> */}
-                <p className={`inline-block align-middle`}>{team2}</p>
+                <p className={`inline-block align-middle ${winner == true ? 'line-through' : ''}`}>{team2}</p>
               </div>
             </div>
           </div>
@@ -93,12 +91,21 @@ function TournamentPlayer() {
     function Round() {
       const teams: string[] = JSON.parse(localStorage.getItem("teams") || "[]")
       const rounds: string[][] = JSON.parse(localStorage.getItem("rounds") || "[]")
+      const winners: string[][] = JSON.parse(localStorage.getItem("winners") || "[]")
       let matches = []
       for (let index = 0; (index * 2) < rounds[currentRound-1].length; index++) {
-        console.log("round: " + index)
+        console.log("round: " + rounds)
+        let winner: undefined | boolean
+        let i = index * 2
+        console.log("Index: " + index + " i: " + i + " round length: " + rounds[currentRound-1].length)
+        if (winners[currentRound-1][i] == "winner" && winners[currentRound-1][i+1] == "loser") {
+          winner = true
+        } else if (winners[currentRound-1][i] == "loser" && winners[currentRound-1][i+1] == "winner") {
+          winner = false
+        }
         matches.push(
           <div onClick={() => onPlay(index)}>
-            <Match key={index} team1={rounds[currentRound-1][index]} team2={rounds[currentRound-1][index+1]} index={index}/>
+            <Match key={index} team1={rounds[currentRound-1][i]} team2={rounds[currentRound-1][i+1]} winner={winner}/>
           </div>
         );
       }

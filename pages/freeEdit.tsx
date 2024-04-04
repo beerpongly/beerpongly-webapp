@@ -28,7 +28,6 @@ type ListItem = {
 const SortableList: React.FC = () => {
   const router = useRouter();
   const supabase = useSupabaseClient<Database>()
-  const [teams, setTeams] = useState<string[]>(JSON.parse(localStorage.getItem("teams") || "[]"));
   const [errorMessage, setErrorMessage] = useState(<div></div>)
   const [list, setList] = useState<ListItem[]>([
     // { id: 1, text: 'Item 1' },
@@ -84,6 +83,7 @@ const SortableList: React.FC = () => {
   }
 
   async function resetTournament() {
+    const teams: string[] = JSON.parse(localStorage.getItem("teams") || "[]")
     let currentTeams = teams.length;
     let roundCount = 0;
     while (currentTeams > 1) {
@@ -119,6 +119,7 @@ const SortableList: React.FC = () => {
   }
 
   const fetchTournaments = async () => {
+    const teams: string[] = JSON.parse(localStorage.getItem("teams") || "[]")
       if (teams.length <= 0) {
         router.push("/freeCreateTournament")
       } else {

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-function TournamentForm() {
+function FreeTournamentForm() {
   const router = useRouter();
   const [teams, setTeams] = useState(['']);
   const [errorMessage, setErrorMessage] = useState(<div></div>)
@@ -62,6 +62,7 @@ function TournamentForm() {
     }
 
     localStorage.setItem("rounds", JSON.stringify(rounds))
+    localStorage.setItem("winners", JSON.stringify(rounds))
   };
 
   const AddTournament = async () => {
@@ -146,4 +147,4 @@ function TournamentForm() {
   );
 };
 
-export default TournamentForm;
+export default FreeTournamentForm;
