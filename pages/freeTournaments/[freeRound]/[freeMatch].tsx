@@ -40,10 +40,16 @@ function TournamentPlayer() {
       localStorage.setItem("rounds", JSON.stringify(rounds))
       localStorage.setItem("winners", JSON.stringify(winners))
       console.log(rounds)
-      router.push({
-        pathname: '/freeTournament',
-        query: {round: Number(round) + 1}
-      })
+      if (rounds[rounds.length-1][0] != "") {
+        router.push({
+          pathname: '/freeWinner'
+        })
+      } else {
+        router.push({
+          pathname: '/freeTournament',
+          query: {round: Number(round) + 1}
+        })
+      }
     }
 
     const fetchMatch = async () => {

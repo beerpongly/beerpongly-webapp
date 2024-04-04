@@ -26,78 +26,26 @@ function TournamentPlayer() {
     const [currentRound, setCurrentRound] = useState(1)
 
     async function findWinner() {
-      if (matches && tournaments) {
-        let theFinalMatch: Matches | undefined
-        let round: number = 0
-        for (let i = 0; i < matches.length; i++) {
-          const match = matches[i];
-          if (match.round > round) {
-            theFinalMatch = match
-            round = match.round
-          }
-        }
-        if (theFinalMatch?.winner == true) {
-            setFinalMatch(theFinalMatch.team1);
-        } else if (theFinalMatch?.winner == false) {
-            setFinalMatch(theFinalMatch.team2);
-        } else {
-            router.push("/tournaments/" + String(tournaments.id))
-        }
+      const teams: string[] = JSON.parse(localStorage.getItem("teams") || "[]")
+      const rounds: string[][] = JSON.parse(localStorage.getItem("rounds") || "[]")
+      const winners: string[][] = JSON.parse(localStorage.getItem("winners") || "[]")
+      console.log("rounds: " + rounds[rounds.length-1])
+      if (rounds[rounds.length-1][0] != "") {
+        setFinalMatch(rounds[rounds.length-1][0])
+      } else {
+        router.push({
+          pathname: '/freeTournament'
+        })
       }
     }
-
-
-    const fetchTournaments = async () => {
-        try {
-            if (typeof router.query.tournament == "string") {
-              const { data: data, error } = await supabase
-                .from('tournaments')
-                .select('*')
-                .eq('id', Number(router.query.tournament))
-                .order('id', { ascending: true })
-              if (error || data.length != 1) console.error('error', error)
-              else {
-                if (!tournaments) {
-                  setTournaments(data[0]);
-                }
-                // setTournaments(data[0]);
-                fetchMatches()
-              } // Update the state with fetched data
-            }
-        } catch (error) {
-            console.error('Error fetching tournaments:', error);
-        }
-    };
-
-    const fetchMatches = async () => {
-        try {
-            if (typeof router.query.tournament == "string") {
-              const { data: data, error } = await supabase
-                .from('matches')
-                .select('*')
-                .eq('tournament', Number(router.query.tournament))
-                .order('id', { ascending: true })
-              if (error) console.error('error', error)
-              else {
-                if (!matches) {
-                  setMatches(data)
-                }
-              }
-            }
-        } catch (error) {
-            console.error('Error fetching matches:', error);
-        }
-    };
+    
+    async function tournament() {
+      router.push("/freeTournament")
+    }
 
     useEffect(() => {
       if (router.isReady) {
         findWinner();
-      }
-    }, [matches]);
-
-    useEffect(() => {
-      if (router.isReady) {
-        fetchTournaments();
       }
     }, [router.isReady]);
 
@@ -106,7 +54,14 @@ function TournamentPlayer() {
       <NavBar></NavBar>
       <div className="w-full h-full bg-white dark:bg-gray-900 text-center">
         <h1 className='dark:text-white'>Winner: {finalMatch}</h1>
+        <button
+          onClick={() => tournament()}
+          className="focus:outline-none text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900"
+        >
+          Tournaments
+        </button>
       </div>
+      
     </>)
     }
 
