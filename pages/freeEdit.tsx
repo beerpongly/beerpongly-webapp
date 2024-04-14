@@ -9,6 +9,10 @@ import {
   useSensors,
 } from '@dnd-kit/core';
 import {
+  restrictToVerticalAxis,
+  restrictToWindowEdges,
+} from '@dnd-kit/modifiers';
+import {
   SortableContext,
   useSortable,
   sortableKeyboardCoordinates,
@@ -156,6 +160,7 @@ const SortableList: React.FC = () => {
         sensors={sensors}
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
+        modifiers={[restrictToVerticalAxis]}
       >
           {playTournamentHTML}
 
