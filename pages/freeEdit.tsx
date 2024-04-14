@@ -70,15 +70,22 @@ const SortableList: React.FC = () => {
     newList.splice(newIndex, 0, removed);
 
     setList(newList);
+
+    setOrder(newList)
   };
 
-  async function setOrder() {
-    console.log(list)
+  async function setOrder(newList: ListItem[]) {
+    console.log(newList)
     const newTeams: string[] = []
-    for (let i = 0; i < list.length; i++) {
-      newTeams.push(list[i].text);
+    for (let i = 0; i < newList.length; i++) {
+      newTeams.push(newList[i].text);
     }
     localStorage.setItem("teams", JSON.stringify(newTeams))
+    console.log("Teams: " + JSON.parse(localStorage.getItem("teams") || "[]"))
+    // router.push("/freeTournament")
+  }
+
+  async function playTournament() {
     router.push("/freeTournament")
   }
 
@@ -93,7 +100,7 @@ const SortableList: React.FC = () => {
 
     let rounds: string[][] = []
     let count = 1;
-    for (let i = roundCount; i > 0; i--) {
+    for (let i = roundCount; i >= 0; i--) {
       let teams: string[] = []
       for (let j = 0; j < Math.pow(2, i); j++) {
         teams.push("")
@@ -154,7 +161,7 @@ const SortableList: React.FC = () => {
 
       </DndContext>
       <button
-        onClick={setOrder}
+        onClick={playTournament}
         className="focus:outline-none text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900"
       >
         Save
