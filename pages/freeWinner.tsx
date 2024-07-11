@@ -4,6 +4,7 @@ import { useSession, useSupabaseClient } from '@supabase/auth-helpers-react'
 import { useEffect, useState } from 'react'
 import { Tournament } from '@/components/tournamentBrackets';
 import NavBar from '@/components/navbar';
+import { Winner } from '@/components/Winner';
 
 type Tournaments = Database['public']['Tables']['tournaments']['Row']
 type Matches = Database['public']['Tables']['matches']['Row']
@@ -57,7 +58,8 @@ function TournamentPlayer() {
     <>
       <NavBar></NavBar>
       <div className="w-full h-full bg-white dark:bg-gray-900 text-center">
-        <h1 className='dark:text-white'>Winner: {finalMatch}</h1>
+        <Winner winner={finalMatch ? finalMatch : ""}></Winner>
+        {/* <h1 className='dark:text-white'>Winner: {finalMatch}</h1>
         <button
           onClick={() => tournament()}
           className="focus:outline-none text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900"
@@ -69,7 +71,7 @@ function TournamentPlayer() {
           className="focus:outline-none text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900"
         >
           Home
-        </button>
+        </button> */}
       </div>
       
     </>)

@@ -25,25 +25,10 @@ export default function NavBar() {
           </Link>
         </div>
         <div className="lg:flex lg:gap-x-12">
-          <Link href="/tournaments" className="text-sm font-semibold leading-6 text-gray-900">Tournaments</Link>
-          {/* <Link href="/shop" className="text-sm font-semibold leading-6 text-gray-900">Shop</Link> 
-          <Link href="/prices" className="text-sm font-semibold leading-6 text-gray-900">Prices</Link> 
-          <Link href="/updates" className="text-sm font-semibold leading-6 text-gray-900">Updates</Link>  */}
+          <Link href="/contact" className="text-sm font-semibold leading-6 text-gray-900">Contact</Link>
+          <Link href="/freeCreateTournament" className="text-sm font-semibold leading-6 text-gray-900">Try Now</Link>
         </div>
         <div className="lg:flex lg:flex-1 lg:justify-end">
-          {!session ? (
-            <Link href="/signin" className="text-sm font-semibold leading-6 text-gray-900">Log in <span aria-hidden="true">&rarr;</span></Link>
-          ) : (
-              <button
-                className="text-sm font-semibold leading-6 text-gray-900"
-                onClick={async () => {
-                  const { error } = await supabase.auth.signOut()
-                  if (error) console.log('Error logging out:', error.message)
-                }}
-              >
-                Logout <span aria-hidden="true">&rarr;</span>
-              </button>
-          )}
         </div>
       </nav>
     </>

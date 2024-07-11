@@ -19,9 +19,8 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { useRouter } from 'next/router'
-import { Database } from '@/types/supabase'
-import { useSession, useSupabaseClient } from '@supabase/auth-helpers-react'
-import { Tournament } from '@/components/tournamentBrackets';
+import { MdDragHandle } from "react-icons/md";
+import NavBar from '@/components/navbar';
 
 type ListItem = {
   id: number;
@@ -31,14 +30,8 @@ type ListItem = {
 
 const SortableList: React.FC = () => {
   const router = useRouter();
-  const supabase = useSupabaseClient<Database>()
   const [errorMessage, setErrorMessage] = useState(<div></div>)
-  const [list, setList] = useState<ListItem[]>([
-    // { id: 1, text: 'Item 1' },
-    // { id: 2, text: 'Item 2' },
-    // { id: 3, text: 'Item 3' },
-    // { id: 4, text: 'Item 4' },
-  ]);
+  const [list, setList] = useState<ListItem[]>([]);
   const [playTournamentHTML, setPlayTournamentHTML] = useState(<div></div>)
   const sensors = useSensors(
     useSensor(MouseSensor, {
@@ -86,7 +79,6 @@ const SortableList: React.FC = () => {
     }
     localStorage.setItem("teams", JSON.stringify(newTeams))
     console.log("Teams: " + JSON.parse(localStorage.getItem("teams") || "[]"))
-    // router.push("/freeTournament")
   }
 
   async function playTournament() {
@@ -155,30 +147,33 @@ const SortableList: React.FC = () => {
   }, [list]);
 
   return (
-    <div className='w-full h-full bg-white dark:bg-gray-900 dark:text-white text-center'>
-      <DndContext 
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-        modifiers={[restrictToVerticalAxis]}
-      >
-          {playTournamentHTML}
+    <div className='w-full h-full bg-white dark:bg-gray-900 text-center'>
+      <NavBar></NavBar>
+      <div className='max-w-sm mx-auto h-full bg-white dark:bg-gray-900 dark:text-white text-center'>
+        <DndContext 
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+          modifiers={[restrictToVerticalAxis]}
+        >
+            {playTournamentHTML}
 
-      </DndContext>
-      <button
-        onClick={playTournament}
-        className="focus:outline-none text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900"
-      >
-        Save
-      </button>
-      <button
-        onClick={resetTournament}
-        className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
-      >
-        Restart Tournament
-      </button>
-      <div>
-        {errorMessage}
+        </DndContext>
+        <button
+          onClick={playTournament}
+          className="focus:outline-none text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900"
+        >
+          Save
+        </button>
+        <button
+          onClick={resetTournament}
+          className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+        >
+          Restart Tournament
+        </button>
+        <div>
+          {errorMessage}
+        </div>
       </div>
     </div>
   );
@@ -197,10 +192,10 @@ const SortableItem: React.FC<{ id: number; text: string }> = ({ id, text }) => {
   };
 
   return (
-    <li ref={setNodeRef} style={style} className='text-black'>
+    <div ref={setNodeRef} style={style} className='text-black rounded-lg'>
       {text}
-      <button className='float-right' ref={setActivatorNodeRef} {...listeners}>Drag handle</button>
-    </li>
+      <button className='float-right' ref={setActivatorNodeRef} {...listeners}><MdDragHandle /></button>
+    </div>
   );
 };
 

@@ -274,7 +274,7 @@ function TournamentPlayer() {
     }
 
     return (
-    <div className='justify-center h-screen bg-gray-50 dark:bg-gray-900'>
+    <div className='justify-center h-screen'>
       <NavBar></NavBar>
       <br />
       <div className='flex justify-center grid grid-cols-1 gap-4 items-center'>
