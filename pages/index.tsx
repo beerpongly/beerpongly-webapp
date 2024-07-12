@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import NavBar from '@/components/navbar';
 import { Hero } from '@/components/Hero';
+import { AppDetails } from '@/components/AppDetails';
+import { Footer } from '@/components/Footer';
 
 export default function Home() {
   return (
@@ -25,6 +27,7 @@ export default function Home() {
         </div>
       </section> */}
       <Hero></Hero>
+      <Footer></Footer>
     </>
   )
 }
