@@ -3,6 +3,7 @@ import { Database } from '@/types/supabase'
 import { useSession, useSupabaseClient } from '@supabase/auth-helpers-react'
 import { useEffect, useState } from 'react'
 import NavBar from '@/components/navbar';
+import { Footer } from '@/components/Footer';
 
 type Tournaments = Database['public']['Tables']['tournaments']['Row']
 type Matches = Database['public']['Tables']['matches']['Row']
@@ -96,18 +97,18 @@ function TournamentPlayer() {
       <>
       <NavBar></NavBar>
       <section className="w-full h-full bg-white dark:bg-gray-900 text-center">
-          <h1 className="max-w-2xl mb-4 text-4xl font-extrabold tracking-tight leading-none md:text-5xl xl:text-6xl dark:text-white">Tournament Name: Free Tournament</h1>
+          <h3 className="text-3xl font-bold dark:text-white">{team1} vs {team2}</h3>
           <p className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">Round: {currentRound}</p>
-          <p className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">Teams: {team1}</p>
-          <button onClick={() =>processWinner(true)} className="inline-flex items-center justify-center px-5 py-3 text-base font-medium text-center text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 dark:text-white dark:border-gray-700 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
+          <button onClick={() =>processWinner(true)} className="inline-flex items-center justify-center px-5 py-3 text-base font-medium text-center text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
             {team1} Wins!
           </button>
-          <p className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">Teams: {team2}</p>
-          <button onClick={() =>processWinner(false)} className="inline-flex items-center justify-center px-5 py-3 text-base font-medium text-center text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 dark:text-white dark:border-gray-700 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
+          <p className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">vs</p>
+          <button onClick={() =>processWinner(false)} className="inline-flex items-center justify-center px-5 py-3 text-base font-medium text-center text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
             {team2} Wins!
           </button> 
           <br />
       </section>
+      <Footer></Footer>
       </>
     )
   }

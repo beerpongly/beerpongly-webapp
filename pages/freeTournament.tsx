@@ -5,6 +5,7 @@ import { ReactElement, useEffect, useState } from 'react'
 import { TournamentFormProps } from '../types/form-types'; // Adjust the path based on your project structure
 // import { Matchup, Round, RoundMatches, Tournament } from '@/components/tournamentBrackets';
 import NavBar from '@/components/navbar';
+import { Footer } from '@/components/Footer';
 
 type Tournaments = Database['public']['Tables']['tournaments']['Row']
 type Matches = Database['public']['Tables']['matches']['Row']
@@ -274,8 +275,9 @@ function TournamentPlayer() {
     }
 
     return (
-    <div className='justify-center h-screen bg-gray-50 dark:bg-gray-900'>
+    <>
       <NavBar></NavBar>
+    <section className="w-full h-full bg-white dark:bg-gray-900 text-center">
       <br />
       <div className='flex justify-center grid grid-cols-1 gap-4 items-center'>
         <div className='flex justify-center'>
@@ -292,7 +294,9 @@ function TournamentPlayer() {
           </div>
         </div>
       </div>
-    </div>)
+      </section>
+      <Footer></Footer>
+    </>)
     }
 
 export default TournamentPlayer;
