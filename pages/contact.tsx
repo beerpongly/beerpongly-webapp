@@ -1,4 +1,5 @@
 import { Contact } from '@/components/Contact';
+import { Footer } from '@/components/Footer';
 import NavBar from '@/components/navbar';
 
 export default function Shop() {
@@ -6,6 +7,7 @@ export default function Shop() {
     <>
         <NavBar />
         <Contact />
+        <Footer />
     </>
   )
 }

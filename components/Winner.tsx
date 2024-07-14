@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Container } from "@/components/Container";
-import heroImg from "../public/app-double-images.png";
+import heroImg from "../public/app-on-phone.png";
+import Link from "next/link";
 
 interface WinnerProp {
   winner: string;
@@ -20,13 +21,15 @@ export const Winner = ({winner}: WinnerProp) => {
             </p>
 
             <div className="flex flex-col items-start space-y-3 sm:space-x-4 sm:space-y-0 sm:items-center sm:flex-row">
-              <a
-                href="#"
+              <Link
+                href="/"
                 target="_blank"
                 rel="noopener"
-                className="px-8 py-4 text-lg font-medium text-center text-white bg-indigo-600 rounded-md ">
+                className="px-8 py-4 text-lg font-medium text-center text-white rounded-md bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                // class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                >
                 Download For Free
-              </a>
+              </Link>
             </div>
           </div>
         </div>
@@ -34,8 +37,8 @@ export const Winner = ({winner}: WinnerProp) => {
           <div className="">
             <Image
               src={heroImg}
-              width="616"
-              height="617"
+              width="400"
+              height="400"
               className={"object-cover"}
               alt="Hero Illustration"
               loading="eager"

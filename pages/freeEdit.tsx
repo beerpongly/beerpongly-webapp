@@ -21,6 +21,7 @@ import {
 import { useRouter } from 'next/router'
 import { MdDragHandle } from "react-icons/md";
 import NavBar from '@/components/navbar';
+import { Footer } from '@/components/Footer';
 
 type ListItem = {
   id: number;
@@ -175,6 +176,7 @@ const SortableList: React.FC = () => {
           {errorMessage}
         </div>
       </div>
+      <Footer></Footer>
     </div>
   );
 };
@@ -188,11 +190,11 @@ const SortableItem: React.FC<{ id: number; text: string }> = ({ id, text }) => {
     cursor: 'grab',
     padding: '10px',
     margin: '5px',
-    backgroundColor: '#f0f0f0',
+    // backgroundColor: '#f0f0f0',
   };
 
   return (
-    <div ref={setNodeRef} style={style} className='text-black rounded-lg'>
+    <div ref={setNodeRef} style={style} className='text-black rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'>
       {text}
       <button className='float-right' ref={setActivatorNodeRef} {...listeners}><MdDragHandle /></button>
     </div>

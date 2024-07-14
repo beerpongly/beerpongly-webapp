@@ -96,7 +96,7 @@ function FreeTournamentForm() {
   return (
     // <div className="min-h-screen flex items-center justify-center">
       <form onSubmit={handleSubmit} className="max-w-sm mx-auto">
-        <h2 className="text-2xl font-semibold mb-6">Create Tournament</h2>
+        <h2 className="text-2xl font-semibold mb-6 dark:text-white">Create Tournament</h2>
 
         <div className="mb-5">
           <label htmlFor="teams" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
@@ -128,8 +128,8 @@ function FreeTournamentForm() {
             className="flex text-center items-center h-10 mr-2 text-gray-900 text-sm rounded-lg block w-full p-2.5"
             onClick={handleAddTeam}
           >
-            <FaPlus className='flex text-center'/>
-            <span className="relative px-5 py-2.5 transition-all ease-in duration-75 rounded-md group-hover:bg-opacity-0">
+            <FaPlus className='flex text-center dark:text-white'/>
+            <span className="relative px-5 py-2.5 transition-all ease-in duration-75 rounded-md group-hover:bg-opacity-0 dark:text-white">
               Add Team
             </span>
           </button>

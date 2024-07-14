@@ -6,6 +6,7 @@ import Link from "next/link";
 export const Footer = () => {
   return (
     <>
+    <div className="dark:bg-gray-900">
       <Container className="flex flex-wrap ">
       <div className="w-full max-w-screen-xl mx-auto p-4 md:py-8">
         <div className="sm:flex sm:items-center sm:justify-between">
@@ -32,6 +33,7 @@ export const Footer = () => {
         <span className="block text-sm text-gray-500 sm:text-center dark:text-gray-400">2024 <a href="/" className="hover:underline">Beerpongly</a></span>
     </div>
       </Container>
+      </div>
     </>
   );
 }

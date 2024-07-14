@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { Tournament } from '@/components/tournamentBrackets';
 import NavBar from '@/components/navbar';
 import { Winner } from '@/components/Winner';
+import { Footer } from '@/components/Footer';
 
 type Tournaments = Database['public']['Tables']['tournaments']['Row']
 type Matches = Database['public']['Tables']['matches']['Row']
@@ -73,6 +74,7 @@ function TournamentPlayer() {
           Home
         </button> */}
       </div>
+      <Footer></Footer>
       
     </>)
     }
